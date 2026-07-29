@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de OTM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root{
+    --bg: #EEF1E9;
+    --surface: #FFFFFF;
+    --ink: #1B241E;
+    --ink-soft: #5B655C;
+    --primary: #1F3D2B;
+    --primary-light: #3E6B4C;
+    --gold: #B8892B;
+    --danger: #A93226;
+    --line: #D7DBCF;
+    --line-strong: #B9C0AF;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background: var(--primary-light); color:#fff; }
+
+  header.top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 28px;
+    border-bottom:2px solid var(--ink);
+    background:var(--surface);
+  }
+  .brand{ display:flex; align-items:baseline; gap:12px; }
+  .brand .mark{
+    font-family:'Archivo',sans-serif;
+    font-weight:900;
+    font-size:15px;
+    letter-spacing:0.14em;
+    background:var(--primary);
+    color:#fff;
+    padding:6px 10px;
+    border-radius:4px;
+  }
+  .brand h1{
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    font-size:22px;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .brand .fecha-hoy{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+
+  #g_id_signin_wrap{ display:flex; align-items:center; gap:14px; }
+  .user-chip{
+    display:none;
+    align-items:center;
+    gap:10px;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .user-chip .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--primary-light);
+  }
+  .btn-salir{
+    display:none;
+    border:1px solid var(--line-strong);
+    background:transparent;
+    color:var(--ink-soft);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    padding:7px 12px;
+    border-radius:6px;
+    cursor:pointer;
+  }
+  .btn-salir:hover{ border-color:var(--ink); color:var(--ink); }
+
+  main{
+    max-width:900px;
+    margin:0 auto;
+    padding:32px 20px 80px;
+  }
+
+  .toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:22px;
+  }
+  .toolbar h2{
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    font-size:19px;
+    margin:0;
+  }
+  .toolbar .count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  input#buscador{
+    flex:1 1 220px;
+    max-width:320px;
+    padding:9px 12px;
+    border:1.5px solid var(--line-strong);
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    background:var(--surface);
+    color:var(--ink);
+  }
+  input#buscador:focus{
+    outline:none;
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(31,61,43,0.12);
+  }
+
+  #estado-carga{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+    padding:40px 0;
+    text-align:center;
+  }
+
+  .vacio{
+    text-align:center;
+    padding:60px 20px;
+    border:2px dashed var(--line-strong);
+    border-radius:var(--radius);
+    background:var(--surface);
+  }
+  .vacio .icono{ font-size:34px; margin-bottom:10px; }
+  .vacio h3{
+    font-family:'Archivo',sans-serif;
+    font-size:17px;
+    margin:0 0 6px;
+  }
+  .vacio p{ margin:0; color:var(--ink-soft); font-size:14px; }
+
+  .lista{ display:flex; flex-direction:column; gap:16px; }
+
+  /* --- La "ficha" de OTM, estilo ticket de orden de trabajo --- */
+  .ticket{
+    position:relative;
+    display:flex;
+    background:var(--surface);
+    border:1.5px solid var(--ink);
+    border-radius:var(--radius);
+    overflow:visible;
+    box-shadow:3px 3px 0 rgba(27,36,30,0.08);
+  }
+  .ticket .stub{
+    position:relative;
+    flex:0 0 84px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:14px 6px;
+    border-right:2px dashed var(--line-strong);
+    text-align:center;
+  }
+  .ticket .stub::before,
+  .ticket .stub::after{
+    content:'';
+    position:absolute;
+    right:-9px;
+    width:18px;height:18px;
+    border-radius:50%;
+    background:var(--bg);
+    border:1.5px solid var(--ink);
+  }
+  .ticket .stub::before{ top:-10px; }
+  .ticket .stub::after{ bottom:-10px; }
+
+  .stub .folio{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:11.5px;
+    line-height:1.3;
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    letter-spacing:0.02em;
+  }
+  .stub .tipo-badge{
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    font-size:11px;
+    letter-spacing:0.06em;
+    padding:4px 6px;
+    border-radius:5px;
+    color:#fff;
+  }
+  .tipo-OM01{ background:var(--danger); }
+  .tipo-OM03{ background:var(--primary-light); }
+  .tipo-OM04{ background:var(--gold); }
+  .tipo-otro{ background:var(--ink-soft); }
+
+  .ticket .cuerpo{
+    flex:1;
+    padding:16px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    min-width:0;
+  }
+  .cuerpo .fila-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .cuerpo .equipo{
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    font-size:16px;
+    line-height:1.25;
+  }
+  .cuerpo .actividad{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .prioridad{
+    flex:0 0 auto;
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    padding:4px 9px;
+    border-radius:20px;
+    white-space:nowrap;
+    transform:rotate(-2deg);
+    border:1.5px solid currentColor;
+  }
+  .prioridad.Alta{ color:var(--danger); }
+  .prioridad.Media{ color:var(--gold); }
+  .prioridad.Baja{ color:var(--primary-light); }
+
+  .cuerpo .descripcion{
+    font-size:13.5px;
+    color:var(--ink);
+    line-height:1.45;
+  }
+
+  .cuerpo .meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-top:4px;
+    padding-top:10px;
+    border-top:1px solid var(--line);
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  .cuerpo .meta span b{ color:var(--ink); font-weight:600; }
+
+  .estado-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    font-weight:600;
+    padding:3px 10px;
+    border-radius:20px;
+  }
+  .estado-badge .dot{ width:7px; height:7px; border-radius:50%; }
+  .estado-Pendiente{ background:#F3E7D0; color:#7A5A17; }
+  .estado-Pendiente .dot{ background:#B8892B; }
+  .estado-En-proceso{ background:#DDEAE1; color:#1F5C3B; }
+  .estado-En-proceso .dot{ background:#1F5C3B; }
+  .estado-Completada{ background:#E4E7E1; color:#5B655C; }
+  .estado-Completada .dot{ background:#8A9384; }
+
+  .fuga-flag{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    color:var(--danger);
+    font-weight:600;
+  }
+
+  @media (max-width:560px){
+    header.top{ padding:16px; flex-wrap:wrap; gap:10px; }
+    .ticket{ flex-direction:column; }
+    .ticket .stub{
+      flex-direction:row;
+      border-right:none;
+      border-bottom:2px dashed var(--line-strong);
+      padding:10px 14px;
+      justify-content:flex-start;
+    }
+    .stub::before, .stub::after{ display:none; }
+    .stub .folio{ writing-mode:horizontal-tb; transform:none; font-size:12px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <span class="mark">OTM</span>
+    <div>
+      <h1>Control de mantenimiento</h1>
+      <div class="fecha-hoy" id="fecha-hoy"></div>
+    </div>
+  </div>
+  <div id="g_id_signin_wrap">
+    <div class="user-chip" id="user-chip"><span class="dot"></span><span id="user-email"></span></div>
+    <div id="g_id_signin"></div>
+    <button class="btn-salir" id="btn-salir">Cerrar sesión</button>
+  </div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <h2>OTM de hoy</h2>
+    <input id="buscador" type="text" placeholder="Buscar por equipo o responsable...">
+    <span class="count" id="contador"></span>
+  </div>
+
+  <div id="estado-carga">Cargando OTM del día...</div>
+  <div class="lista" id="lista" style="display:none;"></div>
+  <div class="vacio" id="vacio" style="display:none;">
+    <div class="icono">🗒️</div>
+    <h3>No hay OTM registradas hoy</h3>
+    <p>Cuando alguien reporte una nueva orden, va a aparecer aquí en pocos minutos.</p>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN — reemplaza estos 3 valores por los tuyos
+   ============================================================ */
+const CONFIG = {
+  GOOGLE_CLIENT_ID: "TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+  ALLOWED_EMAILS: [
+    // agrega aquí los correos de Google de los trabajadores autorizados
+    "juan.perez@gmail.com"
+  ],
+  WORKER_URL: "https://otm-puente.imerino.workers.dev/",
+  REFRESCO_MS: 60000 // cada cuánto vuelve a consultar el JSON (60s)
+};
+/* ============================================================ */
+
+const elLista = document.getElementById('lista');
+const elVacio = document.getElementById('vacio');
+const elCarga = document.getElementById('estado-carga');
+const elContador = document.getElementById('contador');
+const elBuscador = document.getElementById('buscador');
+const elFechaHoy = document.getElementById('fecha-hoy');
+
+let otmsCache = [];
+
+// --- Fecha de hoy legible en el header ---
+elFechaHoy.textContent = new Date().toLocaleDateString('es-PE', {
+  weekday: 'long', day: 'numeric', month: 'long'
+});
+
+// --- Convierte el número de serie de Excel (o texto) a fecha legible ---
+function convertirFechaExcel(valor) {
+  if (valor === undefined || valor === null || valor === '') return '';
+  if (isNaN(valor)) return valor;
+  const fechaBase = new Date(Date.UTC(1899, 11, 30));
+  const fecha = new Date(fechaBase.getTime() + Number(valor) * 86400000);
+  return fecha.toISOString().split('T')[0];
+}
+
+function claseTipo(tipo) {
+  if (tipo === 'OM01') return 'tipo-OM01';
+  if (tipo === 'OM03') return 'tipo-OM03';
+  if (tipo === 'OM04') return 'tipo-OM04';
+  return 'tipo-otro';
+}
+
+function claseEstado(estado) {
+  return 'estado-' + (estado || 'Pendiente').replace(/\s+/g, '-');
+}
+
+function renderOTMs(lista) {
+  if (!lista.length) {
+    elLista.style.display = 'none';
+    elVacio.style.display = 'block';
+    elContador.textContent = '';
+    return;
+  }
+  elVacio.style.display = 'none';
+  elLista.style.display = 'flex';
+  elContador.textContent = lista.length + (lista.length === 1 ? ' orden' : ' órdenes');
+
+  elLista.innerHTML = lista.map(o => `
+    <article class="ticket">
+      <div class="stub">
+        <span class="folio">${o.Orden || ''}</span>
+        <span class="tipo-badge ${claseTipo(o.Tipo)}">${o.Tipo || '—'}</span>
+      </div>
+      <div class="cuerpo">
+        <div class="fila-top">
+          <div>
+            <div class="equipo">${o.Equipo_Activo || 'Equipo sin especificar'}</div>
+            <div class="actividad">${o.Actividad || ''}</div>
+          </div>
+          <span class="prioridad ${o.Prioridad || 'Media'}">${o.Prioridad || 'Media'}</span>
+        </div>
+        <div class="descripcion">${o.Descripcion || ''}</div>
+        <div class="meta">
+          <span class="estado-badge ${claseEstado(o.Estado)}"><span class="dot"></span>${o.Estado || 'Pendiente'}</span>
+          <span><b>Responsable:</b> ${o.Responsable || '—'}</span>
+          <span><b>Fecha:</b> ${convertirFechaExcel(o.Fecha)}</span>
+          ${String(o.Fuga).toLowerCase() === 'si' ? '<span class="fuga-flag">⚠ Con fuga</span>' : ''}
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+function aplicarFiltro() {
+  const q = elBuscador.value.trim().toLowerCase();
+  if (!q) { renderOTMs(otmsCache); return; }
+  const filtradas = otmsCache.filter(o =>
+    (o.Equipo_Activo || '').toLowerCase().includes(q) ||
+    (o.Responsable || '').toLowerCase().includes(q) ||
+    (o.Orden || '').toLowerCase().includes(q)
+  );
+  renderOTMs(filtradas);
+}
+elBuscador.addEventListener('input', aplicarFiltro);
+
+async function cargarOTMs() {
+  try {
+    const resp = await fetch(CONFIG.WORKER_URL, { cache: 'no-store' });
+    if (!resp.ok) throw new Error('Respuesta no válida del servidor');
+    const datos = await resp.json();
+    otmsCache = Array.isArray(datos) ? datos : [];
+    elCarga.style.display = 'none';
+    aplicarFiltro();
+  } catch (err) {
+    elCarga.textContent = 'No se pudo cargar la lista de OTM. Verifica tu conexión e intenta de nuevo.';
+    elCarga.style.display = 'block';
+    elLista.style.display = 'none';
+    elVacio.style.display = 'none';
+    console.error(err);
+  }
+}
+
+/* ============================================================
+   LOGIN CON GOOGLE
+   Si no has configurado todavía tu GOOGLE_CLIENT_ID real, la
+   página carga la lista directamente (modo de prueba) para que
+   puedas revisar el diseño y los datos sin bloquear nada.
+   ============================================================ */
+function iniciarApp() {
+  cargarOTMs();
+  setInterval(cargarOTMs, CONFIG.REFRESCO_MS);
+}
+
+function mostrarSesion(email) {
+  document.getElementById('user-chip').style.display = 'flex';
+  document.getElementById('user-email').textContent = email;
+  document.getElementById('btn-salir').style.display = 'inline-block';
+  document.getElementById('g_id_signin').style.display = 'none';
+}
+
+function decodificarJWT(token) {
+  const payload = token.split('.')[1];
+  return JSON.parse(decodeURIComponent(escape(atob(payload.replace(/-/g, '+').replace(/_/g, '/')))));
+}
+
+function alRecibirCredencial(response) {
+  const datos = decodificarJWT(response.credential);
+  const email = (datos.email || '').toLowerCase();
+
+  if (!CONFIG.ALLOWED_EMAILS.map(e => e.toLowerCase()).includes(email)) {
+    alert('Este correo no está autorizado para acceder. Contacta a tu supervisor.');
+    return;
+  }
+  mostrarSesion(email);
+  iniciarApp();
+}
+
+document.getElementById('btn-salir').addEventListener('click', () => location.reload());
+
+window.onload = function () {
+  const esPlaceholder = CONFIG.GOOGLE_CLIENT_ID.startsWith('TU_GOOGLE_CLIENT_ID');
+  if (esPlaceholder) {
+    console.warn('Google Client ID no configurado todavía: cargando en modo de prueba, sin login.');
+    iniciarApp();
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id: CONFIG.GOOGLE_CLIENT_ID,
+    callback: alRecibirCredencial
+  });
+  google.accounts.id.renderButton(
+    document.getElementById('g_id_signin'),
+    { theme: 'outline', size: 'medium', text: 'signin_with' }
+  );
+};
+</script>
+</body>
+</html>
