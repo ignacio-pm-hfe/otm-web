@@ -18,6 +18,7 @@
     --primary-light: #3E6B4C;
     --gold: #B8892B;
     --danger: #A93226;
+    --ok: #1F5C3B;
     --line: #D7DBCF;
     --line-strong: #B9C0AF;
     --radius: 10px;
@@ -50,257 +51,130 @@
     padding:6px 10px;
     border-radius:4px;
   }
-  header.top h1{
-    font-family:'Archivo',sans-serif;
-    font-weight:800;
-    font-size:20px;
-    margin:0;
-  }
+  header.top h1{ font-family:'Archivo',sans-serif; font-weight:800; font-size:20px; margin:0; }
   a.volver{
-    margin-left:auto;
-    font-size:13px;
-    color:var(--ink-soft);
-    text-decoration:none;
-    border:1px solid var(--line-strong);
-    padding:7px 12px;
-    border-radius:6px;
+    margin-left:auto; font-size:13px; color:var(--ink-soft); text-decoration:none;
+    border:1px solid var(--line-strong); padding:7px 12px; border-radius:6px;
   }
   a.volver:hover{ border-color:var(--ink); color:var(--ink); }
 
-  main{
-    max-width:640px;
-    margin:0 auto;
-    padding:50px 20px 100px;
+  main{ max-width:640px; margin:0 auto; padding:50px 20px 100px; }
+
+  .banner-modo{
+    background:#FBEFC9;
+    border:1.5px solid var(--gold);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    margin-bottom:18px;
+    font-size:13.5px;
+    display:none;
   }
+  .banner-modo.visible{ display:block; }
+  .banner-modo b{ font-family:'Archivo',sans-serif; }
 
   .stack{ position:relative; }
   .stack::before, .stack::after{
-    content:'';
-    position:absolute;
-    inset:0;
-    border-radius:var(--radius);
-    border:1.5px solid var(--ink);
-    z-index:0;
+    content:''; position:absolute; inset:0; border-radius:var(--radius); border:1.5px solid var(--ink); z-index:0;
   }
   .stack::before{ background:var(--carbon1); transform:rotate(1.6deg) translate(4px,4px); }
   .stack::after{ background:var(--carbon2); transform:rotate(-1.2deg) translate(-3px,5px); }
 
   form{
-    position:relative;
-    z-index:1;
-    background:var(--surface);
-    border:1.5px solid var(--ink);
-    border-radius:var(--radius);
-    padding:26px 24px 24px;
-    box-shadow:4px 4px 0 rgba(27,36,30,0.1);
+    position:relative; z-index:1; background:var(--surface); border:1.5px solid var(--ink);
+    border-radius:var(--radius); padding:26px 24px 24px; box-shadow:4px 4px 0 rgba(27,36,30,0.1);
   }
 
-  .form-title{
-    font-family:'Archivo',sans-serif;
-    font-weight:800;
-    font-size:20px;
-    margin:0 0 4px;
-  }
-  .form-sub{
-    font-size:13px;
-    color:var(--ink-soft);
-    margin:0 0 22px;
-    padding-bottom:18px;
-    border-bottom:2px dashed var(--line-strong);
-  }
+  .form-title{ font-family:'Archivo',sans-serif; font-weight:800; font-size:20px; margin:0 0 4px; }
+  .form-sub{ font-size:13px; color:var(--ink-soft); margin:0 0 22px; padding-bottom:18px; border-bottom:2px dashed var(--line-strong); }
 
-  label{
-    display:block;
-    font-family:'Archivo',sans-serif;
-    font-weight:700;
-    font-size:12.5px;
-    letter-spacing:0.02em;
-    color:var(--ink);
-    margin:18px 0 6px;
-  }
+  label{ display:block; font-family:'Archivo',sans-serif; font-weight:700; font-size:12.5px; letter-spacing:0.02em; color:var(--ink); margin:18px 0 6px; }
   label .opcional{ font-weight:400; color:var(--ink-soft); text-transform:none; letter-spacing:0; }
 
-  input[type=text], input[type=number], input[type=email], textarea{
-    width:100%;
-    padding:10px 12px;
-    border:1.5px solid var(--line-strong);
-    border-radius:8px;
-    font-family:'Inter',sans-serif;
-    font-size:14px;
-    color:var(--ink);
-    background:var(--surface);
+  input[type=text], textarea{
+    width:100%; padding:10px 12px; border:1.5px solid var(--line-strong); border-radius:8px;
+    font-family:'Inter',sans-serif; font-size:14px; color:var(--ink); background:var(--surface);
   }
-  input:focus, textarea:focus{
-    outline:none;
-    border-color:var(--primary);
-    box-shadow:0 0 0 3px rgba(31,61,43,0.12);
+  input[type=number]{
+    padding:10px 12px; border:1.5px solid var(--line-strong); border-radius:8px;
+    font-family:'Inter',sans-serif; font-size:14px; color:var(--ink); background:var(--surface);
   }
+  input:focus, textarea:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(31,61,43,0.12); }
   textarea{ min-height:80px; resize:vertical; font-family:'Inter',sans-serif; }
+
+  .campo-oculto{ display:none !important; }
 
   .campo-auto{ position:relative; }
   .sugerencias{
-    position:absolute;
-    top:calc(100% + 4px);
-    left:0; right:0;
-    background:var(--surface);
-    border:1.5px solid var(--ink);
-    border-radius:8px;
-    max-height:220px;
-    overflow-y:auto;
-    z-index:20;
-    box-shadow:3px 3px 0 rgba(27,36,30,0.12);
-    display:none;
+    position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--surface);
+    border:1.5px solid var(--ink); border-radius:8px; max-height:260px; overflow-y:auto; z-index:20;
+    box-shadow:3px 3px 0 rgba(27,36,30,0.12); display:none;
   }
   .sugerencias.abierto{ display:block; }
-  .sugerencias div{
-    padding:9px 12px;
-    font-size:13.5px;
-    cursor:pointer;
-    border-bottom:1px solid var(--line);
+  .sugerencias .item{
+    padding:9px 12px; font-size:13px; cursor:pointer; border-bottom:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
   }
-  .sugerencias div:last-child{ border-bottom:none; }
-  .sugerencias div:hover, .sugerencias div.activo{ background:var(--bg); }
-  .sugerencias .sin-resultados{ color:var(--ink-soft); font-style:italic; cursor:default; }
-  .sugerencias .sin-resultados:hover{ background:var(--surface); }
+  .sugerencias .item:last-child{ border-bottom:none; }
+  .sugerencias .item:hover, .sugerencias .item.activo{ background:var(--bg); }
+  .sugerencias .item .texto{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sugerencias .stock-tag{ flex:0 0 auto; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:20px; white-space:nowrap; }
+  .stock-tag.hay{ background:#DDEAE1; color:var(--ok); }
+  .stock-tag.no{ background:#F6E3DF; color:var(--danger); }
+  .sugerencias .sin-resultados{ color:var(--ink-soft); font-style:italic; cursor:default; padding:9px 12px; font-size:13px; }
 
-  .chip-seleccion{
-    display:none;
-    align-items:center;
-    gap:8px;
-    margin-top:8px;
-    font-size:12.5px;
-    color:var(--primary);
-    font-weight:600;
-  }
+  .chip-seleccion{ display:none; align-items:center; gap:8px; margin-top:8px; font-size:12.5px; color:var(--primary); font-weight:600; flex-wrap:wrap; }
   .chip-seleccion.visible{ display:flex; }
-  .chip-seleccion .quitar{
-    cursor:pointer;
-    color:var(--danger);
-    font-weight:700;
-  }
+  .chip-seleccion .quitar{ cursor:pointer; color:var(--danger); font-weight:700; }
 
-  .fila-toggle{ display:flex; gap:10px; margin-top:6px; }
+  .fila-toggle{ display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
   .btn-toggle{
-    flex:1;
-    padding:10px;
-    border:1.5px solid var(--line-strong);
-    border-radius:8px;
-    background:var(--surface);
-    font-family:'Archivo',sans-serif;
-    font-weight:700;
-    font-size:13px;
-    cursor:pointer;
-    color:var(--ink-soft);
+    flex:1; min-width:110px; padding:10px; border:1.5px solid var(--line-strong); border-radius:8px;
+    background:var(--surface); font-family:'Archivo',sans-serif; font-weight:700; font-size:13px;
+    cursor:pointer; color:var(--ink-soft);
   }
   .btn-toggle.activo-si{ background:#F6E3DF; border-color:var(--danger); color:var(--danger); }
   .btn-toggle.activo-no{ background:#E1EAE3; border-color:var(--primary-light); color:var(--primary); }
+  .btn-toggle.activo-sup{ background:#E1EAE3; border-color:var(--primary-light); color:var(--primary); }
 
-  .tipo-preview{
-    display:none;
-    margin-top:8px;
-    align-items:center;
-    gap:8px;
-    font-size:13px;
-  }
+  .tipo-preview{ display:none; margin-top:8px; align-items:center; gap:8px; font-size:13px; }
   .tipo-preview.visible{ display:flex; }
   .tipo-preview .badge{
-    font-family:'Archivo',sans-serif;
-    font-weight:800;
-    font-size:11px;
-    letter-spacing:0.06em;
-    padding:4px 8px;
-    border-radius:5px;
-    color:#fff;
-    background:var(--gold);
+    font-family:'Archivo',sans-serif; font-weight:800; font-size:11px; letter-spacing:0.06em;
+    padding:4px 8px; border-radius:5px; color:#fff; background:var(--gold);
   }
 
   .materiales-lista{ display:flex; flex-direction:column; gap:10px; margin-top:8px; }
-  .fila-material{
-    display:flex;
-    gap:8px;
-    align-items:flex-start;
-  }
+  .fila-material{ display:flex; gap:8px; align-items:flex-start; }
   .fila-material .campo-auto{ flex:1; }
-  .fila-material input[type=number]{ width:78px; flex:0 0 78px; }
+  .fila-material input[type=number]{ width:70px; flex:0 0 70px; }
+  .fila-material .stock-info{ font-size:11px; margin-top:4px; font-weight:600; }
+  .fila-material .stock-info.hay{ color:var(--ok); }
+  .fila-material .stock-info.no{ color:var(--danger); }
   .btn-quitar-material{
-    flex:0 0 auto;
-    width:38px; height:38px;
-    border:1.5px solid var(--line-strong);
-    background:var(--surface);
-    border-radius:8px;
-    color:var(--danger);
-    font-size:16px;
-    cursor:pointer;
-    line-height:1;
+    flex:0 0 auto; width:38px; height:38px; border:1.5px solid var(--line-strong); background:var(--surface);
+    border-radius:8px; color:var(--danger); font-size:16px; cursor:pointer; line-height:1;
   }
   .btn-quitar-material:hover{ border-color:var(--danger); }
 
   .btn-agregar-material{
-    margin-top:10px;
-    padding:9px 14px;
-    border:1.5px dashed var(--line-strong);
-    background:transparent;
-    border-radius:8px;
-    font-family:'Inter',sans-serif;
-    font-size:13px;
-    color:var(--ink-soft);
-    cursor:pointer;
+    margin-top:10px; padding:9px 14px; border:1.5px dashed var(--line-strong); background:transparent;
+    border-radius:8px; font-family:'Inter',sans-serif; font-size:13px; color:var(--ink-soft); cursor:pointer;
   }
   .btn-agregar-material:hover{ border-color:var(--primary); color:var(--primary); }
 
-  .btn-enviar{
-    width:100%;
-    margin-top:26px;
-    padding:14px;
-    border:none;
-    border-radius:8px;
-    background:var(--primary);
-    color:#fff;
-    font-family:'Archivo',sans-serif;
-    font-weight:800;
-    font-size:15px;
-    letter-spacing:0.01em;
-    cursor:pointer;
-  }
-  .btn-enviar:hover{ background:var(--primary-light); }
-  .btn-enviar:disabled{ background:var(--line-strong); cursor:not-allowed; }
-
   .btn-whatsapp{
-    width:100%;
-    margin-top:10px;
-    padding:12px;
-    border:1.5px solid #25D366;
-    border-radius:8px;
-    background:#fff;
-    color:#1F7A4D;
-    font-family:'Archivo',sans-serif;
-    font-weight:700;
-    font-size:13.5px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
+    width:100%; margin-top:26px; padding:14px; border:none; border-radius:8px; background:#1F7A4D;
+    color:#fff; font-family:'Archivo',sans-serif; font-weight:800; font-size:15px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
   }
-  .btn-whatsapp:hover{ background:#EAFBF1; }
+  .btn-whatsapp:hover{ background:#186139; }
+  .btn-whatsapp:disabled{ background:var(--line-strong); cursor:not-allowed; }
 
-  .mensaje-estado{
-    margin-top:14px;
-    padding:12px 14px;
-    border-radius:8px;
-    font-size:13.5px;
-    display:none;
-  }
-  .mensaje-estado.ok{ display:block; background:#DDEAE1; color:#1F5C3B; }
+  .mensaje-estado{ margin-top:14px; padding:12px 14px; border-radius:8px; font-size:13.5px; display:none; }
+  .mensaje-estado.ok{ display:block; background:#DDEAE1; color:var(--ok); }
   .mensaje-estado.error{ display:block; background:#F6E3DF; color:var(--danger); }
 
-  .cargando-catalogos{
-    text-align:center;
-    padding:60px 20px;
-    color:var(--ink-soft);
-    font-family:'IBM Plex Mono',monospace;
-    font-size:13px;
-  }
+  .cargando-catalogos{ text-align:center; padding:60px 20px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; font-size:13px; }
 </style>
 </head>
 <body>
@@ -314,66 +188,82 @@
 <main>
   <div id="cargando" class="cargando-catalogos">Cargando catálogos...</div>
 
-  <div class="stack" id="stack" style="display:none;">
-    <form id="form-otm" novalidate>
-      <p class="form-title">Reportar nueva OTM</p>
-      <p class="form-sub">Los campos con * son obligatorios. El tipo de mantenimiento se calcula automáticamente según la actividad elegida.</p>
+  <div id="contenido" style="display:none;">
+    <div class="banner-modo" id="banner-modo">
+      <b>Agregando material</b> a la orden <span id="banner-orden"></span> — <span id="banner-equipo"></span>
+    </div>
 
-      <label>Equipo / Activo *</label>
-      <div class="campo-auto" id="auto-equipo">
-        <input type="text" id="input-equipo" placeholder="Escribe para buscar el equipo..." autocomplete="off">
-        <div class="sugerencias" id="sugerencias-equipo"></div>
-      </div>
-      <div class="chip-seleccion" id="chip-equipo">✓ <span id="chip-equipo-texto"></span> <span class="quitar" id="quitar-equipo">Cambiar</span></div>
+    <div class="stack">
+      <form id="form-otm" novalidate>
+        <p class="form-title" id="form-titulo">Reportar nueva OTM</p>
+        <p class="form-sub">Los campos con * son obligatorios. El tipo de mantenimiento se calcula automáticamente según la actividad elegida.</p>
 
-      <label>Actividad *</label>
-      <div class="campo-auto" id="auto-actividad">
-        <input type="text" id="input-actividad" placeholder="Primero elige un equipo..." autocomplete="off" disabled>
-        <div class="sugerencias" id="sugerencias-actividad"></div>
-      </div>
-      <div class="chip-seleccion" id="chip-actividad">✓ <span id="chip-actividad-texto"></span> <span class="quitar" id="quitar-actividad">Cambiar</span></div>
-      <div class="tipo-preview" id="tipo-preview">Tipo de mantenimiento: <span class="badge" id="tipo-badge"></span></div>
+        <div id="bloque-otm-nueva">
+          <label>Equipo / Activo *</label>
+          <div class="campo-auto" id="auto-equipo">
+            <input type="text" id="input-equipo" placeholder="Escribe para buscar el equipo..." autocomplete="off">
+            <div class="sugerencias" id="sugerencias-equipo"></div>
+          </div>
+          <div class="chip-seleccion" id="chip-equipo">✓ <span id="chip-equipo-texto"></span> <span class="quitar" id="quitar-equipo">Cambiar</span></div>
 
-      <label>¿Hay fuga? *</label>
-      <div class="fila-toggle">
-        <button type="button" class="btn-toggle" id="btn-fuga-si" data-valor="Si">Sí</button>
-        <button type="button" class="btn-toggle" id="btn-fuga-no" data-valor="No">No</button>
-      </div>
+          <label>Actividad *</label>
+          <div class="campo-auto" id="auto-actividad">
+            <input type="text" id="input-actividad" placeholder="Primero elige un equipo..." autocomplete="off" disabled>
+            <div class="sugerencias" id="sugerencias-actividad"></div>
+          </div>
+          <div class="chip-seleccion" id="chip-actividad">✓ <span id="chip-actividad-texto"></span> <span class="quitar" id="quitar-actividad">Cambiar</span></div>
+          <div class="tipo-preview" id="tipo-preview">Tipo de mantenimiento: <span class="badge" id="tipo-badge"></span></div>
 
-      <label>Descripción *</label>
-      <textarea id="input-descripcion" placeholder="Describe brevemente el problema o la actividad realizada..."></textarea>
+          <label>¿Hay fuga? *</label>
+          <div class="fila-toggle">
+            <button type="button" class="btn-toggle" id="btn-fuga-si" data-valor="Si">Sí</button>
+            <button type="button" class="btn-toggle" id="btn-fuga-no" data-valor="No">No</button>
+          </div>
 
-      <label>Tu correo (Responsable) *</label>
-      <input type="email" id="input-responsable" placeholder="tu.correo@gmail.com">
+          <label>Descripción *</label>
+          <textarea id="input-descripcion" placeholder="Describe brevemente el problema o la actividad realizada..."></textarea>
+        </div>
 
-      <label>Materiales a reservar <span class="opcional">(opcional)</span></label>
-      <div class="materiales-lista" id="lista-materiales"></div>
-      <button type="button" class="btn-agregar-material" id="btn-agregar-material">+ Agregar material</button>
+        <label>Supervisor responsable *</label>
+        <div class="fila-toggle" id="fila-supervisores"></div>
 
-      <button type="submit" class="btn-enviar" id="btn-enviar">Enviar OTM</button>
-      <button type="button" class="btn-whatsapp" id="btn-whatsapp">📲 Compartir resumen por WhatsApp</button>
-      <div class="mensaje-estado" id="mensaje-estado"></div>
-    </form>
+        <label>Materiales a reservar <span class="opcional">(opcional)</span></label>
+        <div class="materiales-lista" id="lista-materiales"></div>
+        <button type="button" class="btn-agregar-material" id="btn-agregar-material">+ Agregar material</button>
+
+        <button type="button" class="btn-whatsapp" id="btn-whatsapp">📲 Compartir OTM por WhatsApp</button>
+        <div class="mensaje-estado" id="mensaje-estado"></div>
+      </form>
+    </div>
   </div>
 </main>
 
 <script>
 /* ============================================================
-   CONFIGURACIÓN — reemplaza estos valores por los tuyos
+   CONFIGURACIÓN
    ============================================================ */
 const CONFIG = {
   EMAILJS_PUBLIC_KEY: "TU_EMAILJS_PUBLIC_KEY",
   EMAILJS_SERVICE_ID: "TU_EMAILJS_SERVICE_ID",
   EMAILJS_TEMPLATE_ID: "TU_EMAILJS_TEMPLATE_ID",
-  CORREO_DESTINO: "xvjg4.test@inbox.testmail.app"
+  CORREO_DESTINO: "imerino@hfeberries.com",
+  ASUNTO_CORREO: "Nueva OTM",
+  SUPERVISORES: ["MZEGARRA", "JBELLODAS"]
 };
 /* ============================================================ */
 
 let catActividades = [];
-let equipoSeleccionado = null;
-let actividadSeleccionada = null;
 let catMateriales = [];
 let equiposUnicos = [];
+let equipoSeleccionado = null;
+let actividadSeleccionada = null;
+let fugaValor = null;
+let supervisorValor = null;
+
+// --- ¿Venimos de "+ Agregar material" en una OTM existente? ---
+const params = new URLSearchParams(window.location.search);
+const ordenExistente = params.get('orden');
+const equipoDesdeUrl = params.get('equipo');
 
 Promise.all([
   fetch('catalogo-actividades.json').then(r => r.json()),
@@ -381,41 +271,69 @@ Promise.all([
 ]).then(([actividades, materiales]) => {
   catActividades = actividades;
   catMateriales = materiales;
-  const set = new Set(actividades.map(a => a.Equipo_Activo));
-  equiposUnicos = Array.from(set).sort();
+  equiposUnicos = Array.from(new Set(actividades.map(a => a.Equipo_Activo))).sort();
 
   document.getElementById('cargando').style.display = 'none';
-  document.getElementById('stack').style.display = 'block';
+  document.getElementById('contenido').style.display = 'block';
 
   if (CONFIG.EMAILJS_PUBLIC_KEY && !CONFIG.EMAILJS_PUBLIC_KEY.startsWith('TU_')) {
     emailjs.init({ publicKey: CONFIG.EMAILJS_PUBLIC_KEY });
   }
+
+  if (ordenExistente) {
+    document.getElementById('bloque-otm-nueva').classList.add('campo-oculto');
+    document.getElementById('form-titulo').textContent = 'Agregar material a OTM';
+    document.getElementById('banner-modo').classList.add('visible');
+    document.getElementById('banner-orden').textContent = ordenExistente;
+    document.getElementById('banner-equipo').textContent = equipoDesdeUrl || '';
+  }
+
+  inicializarSupervisores();
+  agregarFilaMaterial();
 }).catch(err => {
   document.getElementById('cargando').textContent =
     'No se pudieron cargar los catálogos. Verifica que catalogo-actividades.json y catalogo-materiales.json estén en la misma carpeta que esta página.';
   console.error(err);
 });
 
-/* ---------- Autocompletado genérico ---------- */
-function crearAutocompletado(inputEl, sugerenciasEl, buscarFn, onSeleccionar) {
+/* ---------- Supervisores ---------- */
+function inicializarSupervisores() {
+  const contenedor = document.getElementById('fila-supervisores');
+  CONFIG.SUPERVISORES.forEach(nombre => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn-toggle';
+    btn.textContent = nombre;
+    btn.addEventListener('click', () => {
+      supervisorValor = nombre;
+      [...contenedor.children].forEach(b => b.classList.remove('activo-sup'));
+      btn.classList.add('activo-sup');
+    });
+    contenedor.appendChild(btn);
+  });
+}
+
+/* ---------- Autocompletado genérico (soporta HTML personalizado por ítem) ---------- */
+function crearAutocompletado(inputEl, sugerenciasEl, buscarFn, onSeleccionar, renderItemFn) {
   let indiceActivo = -1;
   let items = [];
 
   inputEl.addEventListener('input', () => {
     const q = inputEl.value.trim();
     if (q.length < 1) { cerrar(); return; }
-    items = buscarFn(q).slice(0, 20);
+    items = buscarFn(q);
     renderizar();
+  });
+  inputEl.addEventListener('focus', () => {
+    if (inputEl.value.trim().length >= 1) { items = buscarFn(inputEl.value.trim()); renderizar(); }
   });
 
   inputEl.addEventListener('keydown', (e) => {
     if (!sugerenciasEl.classList.contains('abierto')) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); mover(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); mover(-1); }
-    else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (indiceActivo >= 0 && items[indiceActivo]) seleccionar(items[indiceActivo]);
-    } else if (e.key === 'Escape') { cerrar(); }
+    else if (e.key === 'Enter') { e.preventDefault(); if (indiceActivo >= 0 && items[indiceActivo]) seleccionar(items[indiceActivo]); }
+    else if (e.key === 'Escape') { cerrar(); }
   });
 
   document.addEventListener('click', (e) => {
@@ -435,7 +353,8 @@ function crearAutocompletado(inputEl, sugerenciasEl, buscarFn, onSeleccionar) {
     } else {
       items.forEach(item => {
         const div = document.createElement('div');
-        div.textContent = item.__label;
+        div.className = 'item';
+        div.innerHTML = renderItemFn ? renderItemFn(item) : `<span class="texto">${item.__label}</span>`;
         div.addEventListener('click', () => seleccionar(item));
         sugerenciasEl.appendChild(div);
       });
@@ -443,15 +362,8 @@ function crearAutocompletado(inputEl, sugerenciasEl, buscarFn, onSeleccionar) {
     sugerenciasEl.classList.add('abierto');
   }
 
-  function seleccionar(item) {
-    cerrar();
-    onSeleccionar(item);
-  }
-
-  function cerrar() {
-    sugerenciasEl.classList.remove('abierto');
-    sugerenciasEl.innerHTML = '';
-  }
+  function seleccionar(item) { cerrar(); onSeleccionar(item); }
+  function cerrar() { sugerenciasEl.classList.remove('abierto'); sugerenciasEl.innerHTML = ''; }
 }
 
 /* ---------- Equipo ---------- */
@@ -460,9 +372,7 @@ const sugEquipo = document.getElementById('sugerencias-equipo');
 
 crearAutocompletado(inputEquipo, sugEquipo, (q) => {
   const ql = q.toLowerCase();
-  return equiposUnicos
-    .filter(e => e.toLowerCase().includes(ql))
-    .map(e => ({ __label: e, valor: e }));
+  return equiposUnicos.filter(e => e.toLowerCase().includes(ql)).slice(0, 30).map(e => ({ __label: e, valor: e }));
 }, (item) => {
   equipoSeleccionado = item.valor;
   document.getElementById('chip-equipo-texto').textContent = item.valor;
@@ -484,7 +394,6 @@ document.getElementById('quitar-equipo').addEventListener('click', () => {
   document.getElementById('auto-equipo').style.display = 'block';
   inputEquipo.value = '';
   inputEquipo.focus();
-
   actividadSeleccionada = null;
   document.getElementById('input-actividad').disabled = true;
   document.getElementById('input-actividad').placeholder = 'Primero elige un equipo...';
@@ -492,7 +401,7 @@ document.getElementById('quitar-equipo').addEventListener('click', () => {
   document.getElementById('tipo-preview').classList.remove('visible');
 });
 
-/* ---------- Actividad (dependiente de equipo) ---------- */
+/* ---------- Actividad ---------- */
 const inputActividad = document.getElementById('input-actividad');
 const sugActividad = document.getElementById('sugerencias-actividad');
 
@@ -501,13 +410,13 @@ crearAutocompletado(inputActividad, sugActividad, (q) => {
   const ql = q.toLowerCase();
   return catActividades
     .filter(a => a.Equipo_Activo === equipoSeleccionado && a.Actividad.toLowerCase().includes(ql))
+    .slice(0, 30)
     .map(a => ({ __label: a.Actividad, valor: a }));
 }, (item) => {
   actividadSeleccionada = item.valor;
   document.getElementById('chip-actividad-texto').textContent = item.valor.Actividad;
   document.getElementById('chip-actividad').classList.add('visible');
   document.getElementById('auto-actividad').style.display = 'none';
-
   document.getElementById('tipo-badge').textContent = item.valor.Tipo || '—';
   document.getElementById('tipo-preview').classList.add('visible');
 });
@@ -521,35 +430,58 @@ document.getElementById('quitar-actividad').addEventListener('click', () => {
   inputActividad.focus();
 });
 
-/* ---------- Fuga (toggle) ---------- */
-let fugaValor = null;
+/* ---------- Fuga ---------- */
 const btnFugaSi = document.getElementById('btn-fuga-si');
 const btnFugaNo = document.getElementById('btn-fuga-no');
-btnFugaSi.addEventListener('click', () => {
-  fugaValor = 'Si';
-  btnFugaSi.classList.add('activo-si');
-  btnFugaNo.classList.remove('activo-no');
-});
-btnFugaNo.addEventListener('click', () => {
-  fugaValor = 'No';
-  btnFugaNo.classList.add('activo-no');
-  btnFugaSi.classList.remove('activo-si');
-});
+btnFugaSi.addEventListener('click', () => { fugaValor = 'Si'; btnFugaSi.classList.add('activo-si'); btnFugaNo.classList.remove('activo-no'); });
+btnFugaNo.addEventListener('click', () => { fugaValor = 'No'; btnFugaNo.classList.add('activo-no'); btnFugaSi.classList.remove('activo-si'); });
+
+/* ---------- Búsqueda inteligente de materiales (con stock) ---------- */
+function buscarMateriales(q) {
+  const ql = q.toLowerCase().trim();
+  const terminos = ql.split(/\s+/).filter(Boolean);
+  const resultados = [];
+
+  for (const m of catMateriales) {
+    const codigoL = m.Codigo.toLowerCase();
+    const descL = (m.Descripcion || '').toLowerCase();
+    let score = -1;
+
+    if (codigoL === ql) score = 100;
+    else if (codigoL.startsWith(ql)) score = 90;
+    else if (descL.startsWith(ql)) score = 80;
+    else if (terminos.every(t => descL.includes(t))) score = 60;
+    else if (descL.split(/\s+/).some(w => w.startsWith(ql))) score = 50;
+    else if (codigoL.includes(ql) || descL.includes(ql)) score = 20;
+
+    if (score >= 0) resultados.push({ item: m, score });
+  }
+
+  resultados.sort((a, b) => b.score - a.score || a.item.Descripcion.length - b.item.Descripcion.length);
+  return resultados.slice(0, 40).map(r => ({ __label: `${r.item.Codigo} — ${r.item.Descripcion}`, valor: r.item }));
+}
+
+function renderItemMaterial(item) {
+  const m = item.valor;
+  const hay = m.Stock > 0;
+  return `<span class="texto">${m.Codigo} — ${m.Descripcion} (${m.Unidad})</span>
+          <span class="stock-tag ${hay ? 'hay' : 'no'}">${hay ? 'Stock: ' + m.Stock : 'Sin stock'}</span>`;
+}
 
 /* ---------- Materiales dinámicos ---------- */
 const listaMateriales = document.getElementById('lista-materiales');
-let contadorFilaMaterial = 0;
 
 function agregarFilaMaterial() {
-  const id = contadorFilaMaterial++;
   const fila = document.createElement('div');
   fila.className = 'fila-material';
-  fila.dataset.id = id;
   fila.innerHTML = `
-    <div class="campo-auto">
-      <input type="text" class="input-material" placeholder="Buscar material por código o nombre..." autocomplete="off">
-      <div class="sugerencias sugerencias-material"></div>
-      <input type="hidden" class="material-codigo">
+    <div style="flex:1;">
+      <div class="campo-auto">
+        <input type="text" class="input-material" placeholder="Buscar material por código o nombre..." autocomplete="off">
+        <div class="sugerencias sugerencias-material"></div>
+        <input type="hidden" class="material-codigo">
+      </div>
+      <div class="stock-info"></div>
     </div>
     <input type="number" class="input-cantidad" min="1" step="1" placeholder="Cant.">
     <button type="button" class="btn-quitar-material" title="Quitar">×</button>
@@ -559,59 +491,90 @@ function agregarFilaMaterial() {
   const inputMat = fila.querySelector('.input-material');
   const sugMat = fila.querySelector('.sugerencias-material');
   const hiddenCodigo = fila.querySelector('.material-codigo');
+  const stockInfo = fila.querySelector('.stock-info');
 
-  crearAutocompletado(inputMat, sugMat, (q) => {
-    const ql = q.toLowerCase();
-    return catMateriales
-      .filter(m => m.Codigo.toLowerCase().includes(ql) || m.Descripcion.toLowerCase().includes(ql))
-      .map(m => ({ __label: `${m.Codigo} — ${m.Descripcion} (${m.Unidad})`, valor: m }));
-  }, (item) => {
+  crearAutocompletado(inputMat, sugMat, buscarMateriales, (item) => {
     inputMat.value = `${item.valor.Codigo} — ${item.valor.Descripcion}`;
     hiddenCodigo.value = item.valor.Codigo;
-  });
+    const hay = item.valor.Stock > 0;
+    stockInfo.textContent = hay ? `✓ Stock disponible: ${item.valor.Stock} ${item.valor.Unidad}` : '⚠ Sin stock registrado';
+    stockInfo.className = 'stock-info ' + (hay ? 'hay' : 'no');
+  }, renderItemMaterial);
 
   fila.querySelector('.btn-quitar-material').addEventListener('click', () => fila.remove());
 }
 document.getElementById('btn-agregar-material').addEventListener('click', agregarFilaMaterial);
 
-/* ---------- Envío ---------- */
-const form = document.getElementById('form-otm');
-const btnEnviar = document.getElementById('btn-enviar');
+/* ---------- Construcción y envío ---------- */
 const btnWhatsapp = document.getElementById('btn-whatsapp');
 const mensajeEstado = document.getElementById('mensaje-estado');
 
-function validarFormulario() {
-  const descripcion = document.getElementById('input-descripcion').value.trim();
-  const responsable = document.getElementById('input-responsable').value.trim();
-
-  const errores = [];
-  if (!equipoSeleccionado) errores.push('Elige un equipo.');
-  if (!actividadSeleccionada) errores.push('Elige una actividad.');
-  if (!fugaValor) errores.push('Indica si hay fuga.');
-  if (!descripcion) errores.push('Escribe una descripción.');
-  if (!responsable || !responsable.includes('@')) errores.push('Escribe un correo válido.');
-
-  return { errores, descripcion, responsable };
+function obtenerMateriales() {
+  return [...listaMateriales.querySelectorAll('.fila-material')].map(fila => ({
+    codigo: fila.querySelector('.material-codigo').value,
+    cantidad: fila.querySelector('.input-cantidad').value
+  })).filter(m => m.codigo && m.cantidad);
 }
 
-function construirCuerpoCorreo(descripcion, responsable) {
-  const materialesTexto = [...listaMateriales.querySelectorAll('.fila-material')]
-    .map(fila => {
-      const codigo = fila.querySelector('.material-codigo').value;
-      const cantidad = fila.querySelector('.input-cantidad').value;
-      if (!codigo || !cantidad) return null;
-      return `${codigo}:${cantidad}`;
-    })
-    .filter(Boolean)
-    .join('; ');
+function validar() {
+  const errores = [];
+  if (!ordenExistente) {
+    if (!equipoSeleccionado) errores.push('Elige un equipo.');
+    if (!actividadSeleccionada) errores.push('Elige una actividad.');
+    if (!fugaValor) errores.push('Indica si hay fuga.');
+    if (!document.getElementById('input-descripcion').value.trim()) errores.push('Escribe una descripción.');
+  }
+  if (!supervisorValor) errores.push('Elige el supervisor responsable.');
+  if (obtenerMateriales().length === 0 && ordenExistente) errores.push('Agrega al menos un material.');
+  return errores;
+}
 
+function construirCuerpoCorreo() {
+  const materialesTexto = obtenerMateriales().map(m => `${m.codigo}:${m.cantidad}`).join('; ');
+
+  if (ordenExistente) {
+    return `Orden_Existente: ${ordenExistente}
+Responsable: ${supervisorValor}
+Materiales: ${materialesTexto}
+FIN_OTM`;
+  }
+
+  const descripcion = document.getElementById('input-descripcion').value.trim();
   return `Equipo_Activo: ${equipoSeleccionado}
 Actividad: ${actividadSeleccionada.Actividad}
 Fuga: ${fugaValor}
-Responsable: ${responsable}
+Responsable: ${supervisorValor}
 Descripcion: ${descripcion}
 Materiales: ${materialesTexto}
 FIN_OTM`;
+}
+
+function construirMensajeWhatsApp() {
+  const materiales = obtenerMateriales().map(m => {
+    const mat = catMateriales.find(x => x.Codigo === m.codigo);
+    const nombre = mat ? mat.Descripcion : m.codigo;
+    return `  • ${m.codigo} — ${nombre} × ${m.cantidad}`;
+  }).join('\n');
+
+  if (ordenExistente) {
+    return `*Material agregado a OTM*
+Orden: ${ordenExistente}
+Equipo/Activo: ${equipoDesdeUrl || '—'}
+Supervisor: ${supervisorValor}
+Materiales:
+${materiales || '(ninguno)'}`;
+  }
+
+  const prioridad = fugaValor === 'Si' ? 'Alta' : 'Media';
+  let msg = `*Resumen de OTM*
+Tipo de mantenimiento: ${actividadSeleccionada.Tipo || '—'}
+Prioridad: ${prioridad}
+Actividad: ${actividadSeleccionada.Actividad}
+DNI (equipo SAP): ${actividadSeleccionada.DNI || '—'}
+Equipo/Activo: ${equipoSeleccionado}
+Supervisor: ${supervisorValor}`;
+  msg += materiales ? `\nMateriales:\n${materiales}` : `\nMateriales: (ninguno)`;
+  return msg;
 }
 
 function enviarAExcel(cuerpoCorreo) {
@@ -622,14 +585,14 @@ function enviarAExcel(cuerpoCorreo) {
   }
   return emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, {
     to_email: CONFIG.CORREO_DESTINO,
-    subject: 'Nueva OTM',
+    subject: CONFIG.ASUNTO_CORREO,
     message: cuerpoCorreo
   });
 }
 
 function limpiarFormulario() {
-  form.reset();
-  document.getElementById('quitar-equipo').click();
+  document.getElementById('input-descripcion').value = '';
+  if (!ordenExistente) document.getElementById('quitar-equipo').click();
   listaMateriales.innerHTML = '';
   btnFugaSi.classList.remove('activo-si');
   btnFugaNo.classList.remove('activo-no');
@@ -637,78 +600,19 @@ function limpiarFormulario() {
   agregarFilaMaterial();
 }
 
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  mensajeEstado.className = 'mensaje-estado';
-  mensajeEstado.textContent = '';
-
-  const { errores, descripcion, responsable } = validarFormulario();
-  if (errores.length) {
-    mensajeEstado.className = 'mensaje-estado error';
-    mensajeEstado.textContent = errores.join(' ');
-    return;
-  }
-
-  const cuerpoCorreo = construirCuerpoCorreo(descripcion, responsable);
-
-  btnEnviar.disabled = true;
-  btnEnviar.textContent = 'Enviando...';
-
-  enviarAExcel(cuerpoCorreo).then((resultado) => {
-    mensajeEstado.className = 'mensaje-estado ok';
-    mensajeEstado.textContent = resultado && resultado.modoPrueba
-      ? 'Modo de prueba (EmailJS no configurado): revisa la consola del navegador para ver el correo que se habría enviado.'
-      : '✓ OTM enviada correctamente. Va a aparecer en la lista del día en unos minutos.';
-    limpiarFormulario();
-  }).catch((err) => {
-    mensajeEstado.className = 'mensaje-estado error';
-    mensajeEstado.textContent = 'No se pudo enviar. Intenta de nuevo o avisa a tu supervisor.';
-    console.error(err);
-  }).finally(() => {
-    btnEnviar.disabled = false;
-    btnEnviar.textContent = 'Enviar OTM';
-  });
-});
-
-agregarFilaMaterial();
-
-/* ---------- Compartir por WhatsApp (también envía a Excel) ---------- */
 btnWhatsapp.addEventListener('click', () => {
   mensajeEstado.className = 'mensaje-estado';
   mensajeEstado.textContent = '';
 
-  const { errores, descripcion, responsable } = validarFormulario();
+  const errores = validar();
   if (errores.length) {
     mensajeEstado.className = 'mensaje-estado error';
     mensajeEstado.textContent = errores.join(' ');
     return;
   }
 
-  const prioridad = fugaValor === 'Si' ? 'Alta' : 'Media';
-  const materiales = [...listaMateriales.querySelectorAll('.fila-material')]
-    .map(fila => {
-      const codigo = fila.querySelector('.material-codigo').value;
-      const cantidad = fila.querySelector('.input-cantidad').value;
-      if (!codigo || !cantidad) return null;
-      const mat = catMateriales.find(m => m.Codigo === codigo);
-      const nombre = mat ? mat.Descripcion : codigo;
-      return `  • ${codigo} — ${nombre} × ${cantidad}`;
-    })
-    .filter(Boolean)
-    .join('\n');
-
-  let mensajeWhatsapp =
-`*Resumen de OTM*
-Tipo de mantenimiento: ${actividadSeleccionada.Tipo || '—'}
-Prioridad: ${prioridad}
-Actividad: ${actividadSeleccionada.Actividad}
-DNI (equipo SAP): ${actividadSeleccionada.DNI || '—'}
-Equipo/Activo: ${equipoSeleccionado}
-Responsable: ${responsable}`;
-
-  mensajeWhatsapp += materiales ? `\nMateriales:\n${materiales}` : `\nMateriales: (ninguno)`;
-
-  const cuerpoCorreo = construirCuerpoCorreo(descripcion, responsable);
+  const cuerpoCorreo = construirCuerpoCorreo();
+  const mensajeWhatsapp = construirMensajeWhatsApp();
 
   btnWhatsapp.disabled = true;
   btnWhatsapp.textContent = 'Enviando...';
@@ -717,7 +621,7 @@ Responsable: ${responsable}`;
     mensajeEstado.className = 'mensaje-estado ok';
     mensajeEstado.textContent = resultado && resultado.modoPrueba
       ? 'Modo de prueba (EmailJS no configurado): la OTM no se guardó en Excel todavía, pero abrimos WhatsApp igual.'
-      : '✓ OTM guardada en Excel. Abriendo WhatsApp...';
+      : '✓ Guardado en Excel. Abriendo WhatsApp...';
     window.open('https://wa.me/?text=' + encodeURIComponent(mensajeWhatsapp), '_blank');
     limpiarFormulario();
   }).catch((err) => {
@@ -726,7 +630,7 @@ Responsable: ${responsable}`;
     console.error(err);
   }).finally(() => {
     btnWhatsapp.disabled = false;
-    btnWhatsapp.textContent = '📲 Compartir resumen por WhatsApp';
+    btnWhatsapp.textContent = '📲 Compartir OTM por WhatsApp';
   });
 });
 </script>

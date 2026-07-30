@@ -288,6 +288,22 @@
   }
   .cuerpo .meta span b{ color:var(--ink); font-weight:600; }
 
+  .btn-agregar-mat{
+    margin-top:6px;
+    align-self:flex-start;
+    font-size:12px;
+    font-weight:700;
+    font-family:'Archivo',sans-serif;
+    color:var(--primary);
+    background:transparent;
+    border:1.5px dashed var(--primary-light);
+    border-radius:20px;
+    padding:5px 12px;
+    text-decoration:none;
+    display:inline-block;
+  }
+  .btn-agregar-mat:hover{ background:#E1EAE3; }
+
   .estado-badge{
     display:inline-flex;
     align-items:center;
@@ -449,6 +465,7 @@ function renderOTMs(lista) {
           <span><b>Fecha:</b> ${convertirFechaExcel(o.Fecha)}</span>
           ${String(o.Fuga).toLowerCase() === 'si' ? '<span class="fuga-flag">⚠ Con fuga</span>' : ''}
         </div>
+        <a class="btn-agregar-mat" href="crear.html?orden=${encodeURIComponent(o.Orden || '')}&equipo=${encodeURIComponent(o.Equipo_Activo || '')}">+ Agregar material</a>
       </div>
     </article>
   `).join('');
