@@ -247,7 +247,7 @@ const CONFIG = {
   EMAILJS_SERVICE_ID: "service_6lxyfge",
   EMAILJS_TEMPLATE_ID: "template_aei2q7k",
   CORREO_DESTINO: "imerino@hfeberries.com",
-  ASUNTO_CORREO: "Nueva OTM",
+  ASUNTO_CORREO: "NUEVA OTM",
   SUPERVISORES: ["MZEGARRA", "JBELLODAS"]
 };
 /* ============================================================ */
@@ -587,7 +587,7 @@ function enviarAExcel(cuerpoCorreo) {
     to_email: CONFIG.CORREO_DESTINO,
     subject: CONFIG.ASUNTO_CORREO,
     message: cuerpoCorreo
-  });
+  }, CONFIG.EMAILJS_PUBLIC_KEY);
 }
 
 function limpiarFormulario() {
