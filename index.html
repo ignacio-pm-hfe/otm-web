@@ -89,6 +89,21 @@
   }
   .btn-salir:hover{ border-color:var(--ink); color:var(--ink); }
 
+  .header-right{ display:flex; align-items:center; gap:14px; }
+  .btn-nueva-otm{
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    font-size:13px;
+    background:var(--primary);
+    color:#fff;
+    text-decoration:none;
+    padding:9px 16px;
+    border-radius:8px;
+    letter-spacing:0.01em;
+    white-space:nowrap;
+  }
+  .btn-nueva-otm:hover{ background:var(--primary-light); }
+
   main{
     max-width:900px;
     margin:0 auto;
@@ -327,10 +342,13 @@
       <div class="fecha-hoy" id="fecha-hoy"></div>
     </div>
   </div>
-  <div id="g_id_signin_wrap">
-    <div class="user-chip" id="user-chip"><span class="dot"></span><span id="user-email"></span></div>
-    <div id="g_id_signin"></div>
-    <button class="btn-salir" id="btn-salir">Cerrar sesión</button>
+  <div class="header-right">
+    <a href="crear.html" class="btn-nueva-otm">+ Nueva OTM</a>
+    <div id="g_id_signin_wrap">
+      <div class="user-chip" id="user-chip"><span class="dot"></span><span id="user-email"></span></div>
+      <div id="g_id_signin"></div>
+      <button class="btn-salir" id="btn-salir">Cerrar sesión</button>
+    </div>
   </div>
 </header>
 
@@ -360,7 +378,7 @@ const CONFIG = {
     // agrega aquí los correos de Google de los trabajadores autorizados
     "juan.perez@gmail.com"
   ],
-  WORKER_URL: "https://otm-puente.imerino.workers.dev/",
+  WORKER_URL: "https://otm-puente.tu-usuario.workers.dev",
   REFRESCO_MS: 60000 // cada cuánto vuelve a consultar el JSON (60s)
 };
 /* ============================================================ */
