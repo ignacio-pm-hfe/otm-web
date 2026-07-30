@@ -265,6 +265,25 @@
   .btn-enviar:hover{ background:var(--primary-light); }
   .btn-enviar:disabled{ background:var(--line-strong); cursor:not-allowed; }
 
+  .btn-whatsapp{
+    width:100%;
+    margin-top:10px;
+    padding:12px;
+    border:1.5px solid #25D366;
+    border-radius:8px;
+    background:#fff;
+    color:#1F7A4D;
+    font-family:'Archivo',sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .btn-whatsapp:hover{ background:#EAFBF1; }
+
   .mensaje-estado{
     margin-top:14px;
     padding:12px 14px;
@@ -332,6 +351,7 @@
       <button type="button" class="btn-agregar-material" id="btn-agregar-material">+ Agregar material</button>
 
       <button type="submit" class="btn-enviar" id="btn-enviar">Enviar OTM</button>
+      <button type="button" class="btn-whatsapp" id="btn-whatsapp">📲 Compartir resumen por WhatsApp</button>
       <div class="mensaje-estado" id="mensaje-estado"></div>
     </form>
   </div>
@@ -557,13 +577,10 @@ document.getElementById('btn-agregar-material').addEventListener('click', agrega
 /* ---------- Envío ---------- */
 const form = document.getElementById('form-otm');
 const btnEnviar = document.getElementById('btn-enviar');
+const btnWhatsapp = document.getElementById('btn-whatsapp');
 const mensajeEstado = document.getElementById('mensaje-estado');
 
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  mensajeEstado.className = 'mensaje-estado';
-  mensajeEstado.textContent = '';
-
+function validarFormulario() {
   const descripcion = document.getElementById('input-descripcion').value.trim();
   const responsable = document.getElementById('input-responsable').value.trim();
 
@@ -574,12 +591,10 @@ form.addEventListener('submit', (e) => {
   if (!descripcion) errores.push('Escribe una descripción.');
   if (!responsable || !responsable.includes('@')) errores.push('Escribe un correo válido.');
 
-  if (errores.length) {
-    mensajeEstado.className = 'mensaje-estado error';
-    mensajeEstado.textContent = errores.join(' ');
-    return;
-  }
+  return { errores, descripcion, responsable };
+}
 
+function construirCuerpoCorreo(descripcion, responsable) {
   const materialesTexto = [...listaMateriales.querySelectorAll('.fila-material')]
     .map(fila => {
       const codigo = fila.querySelector('.material-codigo').value;
@@ -590,43 +605,61 @@ form.addEventListener('submit', (e) => {
     .filter(Boolean)
     .join('; ');
 
-  const cuerpoCorreo =
-`Equipo_Activo: ${equipoSeleccionado}
+  return `Equipo_Activo: ${equipoSeleccionado}
 Actividad: ${actividadSeleccionada.Actividad}
 Fuga: ${fugaValor}
 Responsable: ${responsable}
 Descripcion: ${descripcion}
 Materiales: ${materialesTexto}
 FIN_OTM`;
+}
+
+function enviarAExcel(cuerpoCorreo) {
+  const esPlaceholder = CONFIG.EMAILJS_SERVICE_ID.startsWith('TU_');
+  if (esPlaceholder) {
+    console.warn('EmailJS no configurado todavía. Cuerpo del correo que se habría enviado:\n' + cuerpoCorreo);
+    return Promise.resolve({ modoPrueba: true });
+  }
+  return emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, {
+    to_email: CONFIG.CORREO_DESTINO,
+    subject: 'Nueva OTM',
+    message: cuerpoCorreo
+  });
+}
+
+function limpiarFormulario() {
+  form.reset();
+  document.getElementById('quitar-equipo').click();
+  listaMateriales.innerHTML = '';
+  btnFugaSi.classList.remove('activo-si');
+  btnFugaNo.classList.remove('activo-no');
+  fugaValor = null;
+  agregarFilaMaterial();
+}
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  mensajeEstado.className = 'mensaje-estado';
+  mensajeEstado.textContent = '';
+
+  const { errores, descripcion, responsable } = validarFormulario();
+  if (errores.length) {
+    mensajeEstado.className = 'mensaje-estado error';
+    mensajeEstado.textContent = errores.join(' ');
+    return;
+  }
+
+  const cuerpoCorreo = construirCuerpoCorreo(descripcion, responsable);
 
   btnEnviar.disabled = true;
   btnEnviar.textContent = 'Enviando...';
 
-  const esPlaceholder = CONFIG.EMAILJS_SERVICE_ID.startsWith('TU_');
-  if (esPlaceholder) {
-    console.warn('EmailJS no configurado todavía. Cuerpo del correo que se habría enviado:\n' + cuerpoCorreo);
-    setTimeout(() => {
-      mensajeEstado.className = 'mensaje-estado ok';
-      mensajeEstado.textContent = 'Modo de prueba (EmailJS no configurado): revisa la consola del navegador para ver el correo que se habría enviado.';
-      btnEnviar.disabled = false;
-      btnEnviar.textContent = 'Enviar OTM';
-    }, 500);
-    return;
-  }
-
-  emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, {
-    to_email: CONFIG.CORREO_DESTINO,
-    subject: 'Nueva OTM',
-    message: cuerpoCorreo
-  }).then(() => {
+  enviarAExcel(cuerpoCorreo).then((resultado) => {
     mensajeEstado.className = 'mensaje-estado ok';
-    mensajeEstado.textContent = '✓ OTM enviada correctamente. Va a aparecer en la lista del día en unos minutos.';
-    form.reset();
-    document.getElementById('quitar-equipo').click();
-    listaMateriales.innerHTML = '';
-    btnFugaSi.classList.remove('activo-si');
-    btnFugaNo.classList.remove('activo-no');
-    fugaValor = null;
+    mensajeEstado.textContent = resultado && resultado.modoPrueba
+      ? 'Modo de prueba (EmailJS no configurado): revisa la consola del navegador para ver el correo que se habría enviado.'
+      : '✓ OTM enviada correctamente. Va a aparecer en la lista del día en unos minutos.';
+    limpiarFormulario();
   }).catch((err) => {
     mensajeEstado.className = 'mensaje-estado error';
     mensajeEstado.textContent = 'No se pudo enviar. Intenta de nuevo o avisa a tu supervisor.';
@@ -638,6 +671,64 @@ FIN_OTM`;
 });
 
 agregarFilaMaterial();
+
+/* ---------- Compartir por WhatsApp (también envía a Excel) ---------- */
+btnWhatsapp.addEventListener('click', () => {
+  mensajeEstado.className = 'mensaje-estado';
+  mensajeEstado.textContent = '';
+
+  const { errores, descripcion, responsable } = validarFormulario();
+  if (errores.length) {
+    mensajeEstado.className = 'mensaje-estado error';
+    mensajeEstado.textContent = errores.join(' ');
+    return;
+  }
+
+  const prioridad = fugaValor === 'Si' ? 'Alta' : 'Media';
+  const materiales = [...listaMateriales.querySelectorAll('.fila-material')]
+    .map(fila => {
+      const codigo = fila.querySelector('.material-codigo').value;
+      const cantidad = fila.querySelector('.input-cantidad').value;
+      if (!codigo || !cantidad) return null;
+      const mat = catMateriales.find(m => m.Codigo === codigo);
+      const nombre = mat ? mat.Descripcion : codigo;
+      return `  • ${codigo} — ${nombre} × ${cantidad}`;
+    })
+    .filter(Boolean)
+    .join('\n');
+
+  let mensajeWhatsapp =
+`*Resumen de OTM*
+Tipo de mantenimiento: ${actividadSeleccionada.Tipo || '—'}
+Prioridad: ${prioridad}
+Actividad: ${actividadSeleccionada.Actividad}
+DNI (equipo SAP): ${actividadSeleccionada.DNI || '—'}
+Equipo/Activo: ${equipoSeleccionado}
+Responsable: ${responsable}`;
+
+  mensajeWhatsapp += materiales ? `\nMateriales:\n${materiales}` : `\nMateriales: (ninguno)`;
+
+  const cuerpoCorreo = construirCuerpoCorreo(descripcion, responsable);
+
+  btnWhatsapp.disabled = true;
+  btnWhatsapp.textContent = 'Enviando...';
+
+  enviarAExcel(cuerpoCorreo).then((resultado) => {
+    mensajeEstado.className = 'mensaje-estado ok';
+    mensajeEstado.textContent = resultado && resultado.modoPrueba
+      ? 'Modo de prueba (EmailJS no configurado): la OTM no se guardó en Excel todavía, pero abrimos WhatsApp igual.'
+      : '✓ OTM guardada en Excel. Abriendo WhatsApp...';
+    window.open('https://wa.me/?text=' + encodeURIComponent(mensajeWhatsapp), '_blank');
+    limpiarFormulario();
+  }).catch((err) => {
+    mensajeEstado.className = 'mensaje-estado error';
+    mensajeEstado.textContent = 'No se pudo guardar en Excel, así que no se abrió WhatsApp. Intenta de nuevo.';
+    console.error(err);
+  }).finally(() => {
+    btnWhatsapp.disabled = false;
+    btnWhatsapp.textContent = '📲 Compartir resumen por WhatsApp';
+  });
+});
 </script>
 </body>
 </html>
