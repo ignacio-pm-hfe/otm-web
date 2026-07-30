@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nueva OTM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+  :root{
+    --bg: #EEF1E9;
+    --surface: #FFFFFF;
+    --ink: #1B241E;
+    --ink-soft: #5B655C;
+    --primary: #1F3D2B;
+    --primary-light: #3E6B4C;
+    --gold: #B8892B;
+    --danger: #A93226;
+    --line: #D7DBCF;
+    --line-strong: #B9C0AF;
+    --radius: 10px;
+    --carbon1: #FBEFC9;
+    --carbon2: #F3D9D2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header.top{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:22px 28px;
+    border-bottom:2px solid var(--ink);
+    background:var(--surface);
+  }
+  .mark{
+    font-family:'Archivo',sans-serif;
+    font-weight:900;
+    font-size:15px;
+    letter-spacing:0.14em;
+    background:var(--primary);
+    color:#fff;
+    padding:6px 10px;
+    border-radius:4px;
+  }
+  header.top h1{
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    font-size:20px;
+    margin:0;
+  }
+  a.volver{
+    margin-left:auto;
+    font-size:13px;
+    color:var(--ink-soft);
+    text-decoration:none;
+    border:1px solid var(--line-strong);
+    padding:7px 12px;
+    border-radius:6px;
+  }
+  a.volver:hover{ border-color:var(--ink); color:var(--ink); }
+
+  main{
+    max-width:640px;
+    margin:0 auto;
+    padding:50px 20px 100px;
+  }
+
+  .stack{ position:relative; }
+  .stack::before, .stack::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    border-radius:var(--radius);
+    border:1.5px solid var(--ink);
+    z-index:0;
+  }
+  .stack::before{ background:var(--carbon1); transform:rotate(1.6deg) translate(4px,4px); }
+  .stack::after{ background:var(--carbon2); transform:rotate(-1.2deg) translate(-3px,5px); }
+
+  form{
+    position:relative;
+    z-index:1;
+    background:var(--surface);
+    border:1.5px solid var(--ink);
+    border-radius:var(--radius);
+    padding:26px 24px 24px;
+    box-shadow:4px 4px 0 rgba(27,36,30,0.1);
+  }
+
+  .form-title{
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    font-size:20px;
+    margin:0 0 4px;
+  }
+  .form-sub{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 22px;
+    padding-bottom:18px;
+    border-bottom:2px dashed var(--line-strong);
+  }
+
+  label{
+    display:block;
+    font-family:'Archivo',sans-serif;
+    font-weight:700;
+    font-size:12.5px;
+    letter-spacing:0.02em;
+    color:var(--ink);
+    margin:18px 0 6px;
+  }
+  label .opcional{ font-weight:400; color:var(--ink-soft); text-transform:none; letter-spacing:0; }
+
+  input[type=text], input[type=number], input[type=email], textarea{
+    width:100%;
+    padding:10px 12px;
+    border:1.5px solid var(--line-strong);
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    color:var(--ink);
+    background:var(--surface);
+  }
+  input:focus, textarea:focus{
+    outline:none;
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(31,61,43,0.12);
+  }
+  textarea{ min-height:80px; resize:vertical; font-family:'Inter',sans-serif; }
+
+  .campo-auto{ position:relative; }
+  .sugerencias{
+    position:absolute;
+    top:calc(100% + 4px);
+    left:0; right:0;
+    background:var(--surface);
+    border:1.5px solid var(--ink);
+    border-radius:8px;
+    max-height:220px;
+    overflow-y:auto;
+    z-index:20;
+    box-shadow:3px 3px 0 rgba(27,36,30,0.12);
+    display:none;
+  }
+  .sugerencias.abierto{ display:block; }
+  .sugerencias div{
+    padding:9px 12px;
+    font-size:13.5px;
+    cursor:pointer;
+    border-bottom:1px solid var(--line);
+  }
+  .sugerencias div:last-child{ border-bottom:none; }
+  .sugerencias div:hover, .sugerencias div.activo{ background:var(--bg); }
+  .sugerencias .sin-resultados{ color:var(--ink-soft); font-style:italic; cursor:default; }
+  .sugerencias .sin-resultados:hover{ background:var(--surface); }
+
+  .chip-seleccion{
+    display:none;
+    align-items:center;
+    gap:8px;
+    margin-top:8px;
+    font-size:12.5px;
+    color:var(--primary);
+    font-weight:600;
+  }
+  .chip-seleccion.visible{ display:flex; }
+  .chip-seleccion .quitar{
+    cursor:pointer;
+    color:var(--danger);
+    font-weight:700;
+  }
+
+  .fila-toggle{ display:flex; gap:10px; margin-top:6px; }
+  .btn-toggle{
+    flex:1;
+    padding:10px;
+    border:1.5px solid var(--line-strong);
+    border-radius:8px;
+    background:var(--surface);
+    font-family:'Archivo',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    cursor:pointer;
+    color:var(--ink-soft);
+  }
+  .btn-toggle.activo-si{ background:#F6E3DF; border-color:var(--danger); color:var(--danger); }
+  .btn-toggle.activo-no{ background:#E1EAE3; border-color:var(--primary-light); color:var(--primary); }
+
+  .tipo-preview{
+    display:none;
+    margin-top:8px;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+  }
+  .tipo-preview.visible{ display:flex; }
+  .tipo-preview .badge{
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    font-size:11px;
+    letter-spacing:0.06em;
+    padding:4px 8px;
+    border-radius:5px;
+    color:#fff;
+    background:var(--gold);
+  }
+
+  .materiales-lista{ display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+  .fila-material{
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+  }
+  .fila-material .campo-auto{ flex:1; }
+  .fila-material input[type=number]{ width:78px; flex:0 0 78px; }
+  .btn-quitar-material{
+    flex:0 0 auto;
+    width:38px; height:38px;
+    border:1.5px solid var(--line-strong);
+    background:var(--surface);
+    border-radius:8px;
+    color:var(--danger);
+    font-size:16px;
+    cursor:pointer;
+    line-height:1;
+  }
+  .btn-quitar-material:hover{ border-color:var(--danger); }
+
+  .btn-agregar-material{
+    margin-top:10px;
+    padding:9px 14px;
+    border:1.5px dashed var(--line-strong);
+    background:transparent;
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .btn-agregar-material:hover{ border-color:var(--primary); color:var(--primary); }
+
+  .btn-enviar{
+    width:100%;
+    margin-top:26px;
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    background:var(--primary);
+    color:#fff;
+    font-family:'Archivo',sans-serif;
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:0.01em;
+    cursor:pointer;
+  }
+  .btn-enviar:hover{ background:var(--primary-light); }
+  .btn-enviar:disabled{ background:var(--line-strong); cursor:not-allowed; }
+
+  .mensaje-estado{
+    margin-top:14px;
+    padding:12px 14px;
+    border-radius:8px;
+    font-size:13.5px;
+    display:none;
+  }
+  .mensaje-estado.ok{ display:block; background:#DDEAE1; color:#1F5C3B; }
+  .mensaje-estado.error{ display:block; background:#F6E3DF; color:var(--danger); }
+
+  .cargando-catalogos{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="mark">OTM</span>
+  <h1>Nueva orden de trabajo</h1>
+  <a class="volver" href="index.html">← Ver OTM del día</a>
+</header>
+
+<main>
+  <div id="cargando" class="cargando-catalogos">Cargando catálogos...</div>
+
+  <div class="stack" id="stack" style="display:none;">
+    <form id="form-otm" novalidate>
+      <p class="form-title">Reportar nueva OTM</p>
+      <p class="form-sub">Los campos con * son obligatorios. El tipo de mantenimiento se calcula automáticamente según la actividad elegida.</p>
+
+      <label>Equipo / Activo *</label>
+      <div class="campo-auto" id="auto-equipo">
+        <input type="text" id="input-equipo" placeholder="Escribe para buscar el equipo..." autocomplete="off">
+        <div class="sugerencias" id="sugerencias-equipo"></div>
+      </div>
+      <div class="chip-seleccion" id="chip-equipo">✓ <span id="chip-equipo-texto"></span> <span class="quitar" id="quitar-equipo">Cambiar</span></div>
+
+      <label>Actividad *</label>
+      <div class="campo-auto" id="auto-actividad">
+        <input type="text" id="input-actividad" placeholder="Primero elige un equipo..." autocomplete="off" disabled>
+        <div class="sugerencias" id="sugerencias-actividad"></div>
+      </div>
+      <div class="chip-seleccion" id="chip-actividad">✓ <span id="chip-actividad-texto"></span> <span class="quitar" id="quitar-actividad">Cambiar</span></div>
+      <div class="tipo-preview" id="tipo-preview">Tipo de mantenimiento: <span class="badge" id="tipo-badge"></span></div>
+
+      <label>¿Hay fuga? *</label>
+      <div class="fila-toggle">
+        <button type="button" class="btn-toggle" id="btn-fuga-si" data-valor="Si">Sí</button>
+        <button type="button" class="btn-toggle" id="btn-fuga-no" data-valor="No">No</button>
+      </div>
+
+      <label>Descripción *</label>
+      <textarea id="input-descripcion" placeholder="Describe brevemente el problema o la actividad realizada..."></textarea>
+
+      <label>Tu correo (Responsable) *</label>
+      <input type="email" id="input-responsable" placeholder="tu.correo@gmail.com">
+
+      <label>Materiales a reservar <span class="opcional">(opcional)</span></label>
+      <div class="materiales-lista" id="lista-materiales"></div>
+      <button type="button" class="btn-agregar-material" id="btn-agregar-material">+ Agregar material</button>
+
+      <button type="submit" class="btn-enviar" id="btn-enviar">Enviar OTM</button>
+      <div class="mensaje-estado" id="mensaje-estado"></div>
+    </form>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN — reemplaza estos valores por los tuyos
+   ============================================================ */
+const CONFIG = {
+  EMAILJS_PUBLIC_KEY: "TU_EMAILJS_PUBLIC_KEY",
+  EMAILJS_SERVICE_ID: "TU_EMAILJS_SERVICE_ID",
+  EMAILJS_TEMPLATE_ID: "TU_EMAILJS_TEMPLATE_ID",
+  CORREO_DESTINO: "xvjg4.test@inbox.testmail.app"
+};
+/* ============================================================ */
+
+let catActividades = [];
+let equipoSeleccionado = null;
+let actividadSeleccionada = null;
+let catMateriales = [];
+let equiposUnicos = [];
+
+Promise.all([
+  fetch('catalogo-actividades.json').then(r => r.json()),
+  fetch('catalogo-materiales.json').then(r => r.json())
+]).then(([actividades, materiales]) => {
+  catActividades = actividades;
+  catMateriales = materiales;
+  const set = new Set(actividades.map(a => a.Equipo_Activo));
+  equiposUnicos = Array.from(set).sort();
+
+  document.getElementById('cargando').style.display = 'none';
+  document.getElementById('stack').style.display = 'block';
+
+  if (CONFIG.EMAILJS_PUBLIC_KEY && !CONFIG.EMAILJS_PUBLIC_KEY.startsWith('TU_')) {
+    emailjs.init({ publicKey: CONFIG.EMAILJS_PUBLIC_KEY });
+  }
+}).catch(err => {
+  document.getElementById('cargando').textContent =
+    'No se pudieron cargar los catálogos. Verifica que catalogo-actividades.json y catalogo-materiales.json estén en la misma carpeta que esta página.';
+  console.error(err);
+});
+
+/* ---------- Autocompletado genérico ---------- */
+function crearAutocompletado(inputEl, sugerenciasEl, buscarFn, onSeleccionar) {
+  let indiceActivo = -1;
+  let items = [];
+
+  inputEl.addEventListener('input', () => {
+    const q = inputEl.value.trim();
+    if (q.length < 1) { cerrar(); return; }
+    items = buscarFn(q).slice(0, 20);
+    renderizar();
+  });
+
+  inputEl.addEventListener('keydown', (e) => {
+    if (!sugerenciasEl.classList.contains('abierto')) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); mover(1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); mover(-1); }
+    else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (indiceActivo >= 0 && items[indiceActivo]) seleccionar(items[indiceActivo]);
+    } else if (e.key === 'Escape') { cerrar(); }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!sugerenciasEl.contains(e.target) && e.target !== inputEl) cerrar();
+  });
+
+  function mover(dir) {
+    indiceActivo = Math.max(0, Math.min(items.length - 1, indiceActivo + dir));
+    [...sugerenciasEl.children].forEach((el, i) => el.classList.toggle('activo', i === indiceActivo));
+  }
+
+  function renderizar() {
+    indiceActivo = -1;
+    sugerenciasEl.innerHTML = '';
+    if (items.length === 0) {
+      sugerenciasEl.innerHTML = '<div class="sin-resultados">Sin resultados</div>';
+    } else {
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.textContent = item.__label;
+        div.addEventListener('click', () => seleccionar(item));
+        sugerenciasEl.appendChild(div);
+      });
+    }
+    sugerenciasEl.classList.add('abierto');
+  }
+
+  function seleccionar(item) {
+    cerrar();
+    onSeleccionar(item);
+  }
+
+  function cerrar() {
+    sugerenciasEl.classList.remove('abierto');
+    sugerenciasEl.innerHTML = '';
+  }
+}
+
+/* ---------- Equipo ---------- */
+const inputEquipo = document.getElementById('input-equipo');
+const sugEquipo = document.getElementById('sugerencias-equipo');
+
+crearAutocompletado(inputEquipo, sugEquipo, (q) => {
+  const ql = q.toLowerCase();
+  return equiposUnicos
+    .filter(e => e.toLowerCase().includes(ql))
+    .map(e => ({ __label: e, valor: e }));
+}, (item) => {
+  equipoSeleccionado = item.valor;
+  document.getElementById('chip-equipo-texto').textContent = item.valor;
+  document.getElementById('chip-equipo').classList.add('visible');
+  document.getElementById('auto-equipo').style.display = 'none';
+
+  actividadSeleccionada = null;
+  document.getElementById('input-actividad').disabled = false;
+  document.getElementById('input-actividad').placeholder = 'Escribe para buscar la actividad...';
+  document.getElementById('chip-actividad').classList.remove('visible');
+  document.getElementById('tipo-preview').classList.remove('visible');
+  document.getElementById('auto-actividad').style.display = 'block';
+  document.getElementById('input-actividad').value = '';
+});
+
+document.getElementById('quitar-equipo').addEventListener('click', () => {
+  equipoSeleccionado = null;
+  document.getElementById('chip-equipo').classList.remove('visible');
+  document.getElementById('auto-equipo').style.display = 'block';
+  inputEquipo.value = '';
+  inputEquipo.focus();
+
+  actividadSeleccionada = null;
+  document.getElementById('input-actividad').disabled = true;
+  document.getElementById('input-actividad').placeholder = 'Primero elige un equipo...';
+  document.getElementById('chip-actividad').classList.remove('visible');
+  document.getElementById('tipo-preview').classList.remove('visible');
+});
+
+/* ---------- Actividad (dependiente de equipo) ---------- */
+const inputActividad = document.getElementById('input-actividad');
+const sugActividad = document.getElementById('sugerencias-actividad');
+
+crearAutocompletado(inputActividad, sugActividad, (q) => {
+  if (!equipoSeleccionado) return [];
+  const ql = q.toLowerCase();
+  return catActividades
+    .filter(a => a.Equipo_Activo === equipoSeleccionado && a.Actividad.toLowerCase().includes(ql))
+    .map(a => ({ __label: a.Actividad, valor: a }));
+}, (item) => {
+  actividadSeleccionada = item.valor;
+  document.getElementById('chip-actividad-texto').textContent = item.valor.Actividad;
+  document.getElementById('chip-actividad').classList.add('visible');
+  document.getElementById('auto-actividad').style.display = 'none';
+
+  document.getElementById('tipo-badge').textContent = item.valor.Tipo || '—';
+  document.getElementById('tipo-preview').classList.add('visible');
+});
+
+document.getElementById('quitar-actividad').addEventListener('click', () => {
+  actividadSeleccionada = null;
+  document.getElementById('chip-actividad').classList.remove('visible');
+  document.getElementById('auto-actividad').style.display = 'block';
+  document.getElementById('tipo-preview').classList.remove('visible');
+  inputActividad.value = '';
+  inputActividad.focus();
+});
+
+/* ---------- Fuga (toggle) ---------- */
+let fugaValor = null;
+const btnFugaSi = document.getElementById('btn-fuga-si');
+const btnFugaNo = document.getElementById('btn-fuga-no');
+btnFugaSi.addEventListener('click', () => {
+  fugaValor = 'Si';
+  btnFugaSi.classList.add('activo-si');
+  btnFugaNo.classList.remove('activo-no');
+});
+btnFugaNo.addEventListener('click', () => {
+  fugaValor = 'No';
+  btnFugaNo.classList.add('activo-no');
+  btnFugaSi.classList.remove('activo-si');
+});
+
+/* ---------- Materiales dinámicos ---------- */
+const listaMateriales = document.getElementById('lista-materiales');
+let contadorFilaMaterial = 0;
+
+function agregarFilaMaterial() {
+  const id = contadorFilaMaterial++;
+  const fila = document.createElement('div');
+  fila.className = 'fila-material';
+  fila.dataset.id = id;
+  fila.innerHTML = `
+    <div class="campo-auto">
+      <input type="text" class="input-material" placeholder="Buscar material por código o nombre..." autocomplete="off">
+      <div class="sugerencias sugerencias-material"></div>
+      <input type="hidden" class="material-codigo">
+    </div>
+    <input type="number" class="input-cantidad" min="1" step="1" placeholder="Cant.">
+    <button type="button" class="btn-quitar-material" title="Quitar">×</button>
+  `;
+  listaMateriales.appendChild(fila);
+
+  const inputMat = fila.querySelector('.input-material');
+  const sugMat = fila.querySelector('.sugerencias-material');
+  const hiddenCodigo = fila.querySelector('.material-codigo');
+
+  crearAutocompletado(inputMat, sugMat, (q) => {
+    const ql = q.toLowerCase();
+    return catMateriales
+      .filter(m => m.Codigo.toLowerCase().includes(ql) || m.Descripcion.toLowerCase().includes(ql))
+      .map(m => ({ __label: `${m.Codigo} — ${m.Descripcion} (${m.Unidad})`, valor: m }));
+  }, (item) => {
+    inputMat.value = `${item.valor.Codigo} — ${item.valor.Descripcion}`;
+    hiddenCodigo.value = item.valor.Codigo;
+  });
+
+  fila.querySelector('.btn-quitar-material').addEventListener('click', () => fila.remove());
+}
+document.getElementById('btn-agregar-material').addEventListener('click', agregarFilaMaterial);
+
+/* ---------- Envío ---------- */
+const form = document.getElementById('form-otm');
+const btnEnviar = document.getElementById('btn-enviar');
+const mensajeEstado = document.getElementById('mensaje-estado');
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  mensajeEstado.className = 'mensaje-estado';
+  mensajeEstado.textContent = '';
+
+  const descripcion = document.getElementById('input-descripcion').value.trim();
+  const responsable = document.getElementById('input-responsable').value.trim();
+
+  const errores = [];
+  if (!equipoSeleccionado) errores.push('Elige un equipo.');
+  if (!actividadSeleccionada) errores.push('Elige una actividad.');
+  if (!fugaValor) errores.push('Indica si hay fuga.');
+  if (!descripcion) errores.push('Escribe una descripción.');
+  if (!responsable || !responsable.includes('@')) errores.push('Escribe un correo válido.');
+
+  if (errores.length) {
+    mensajeEstado.className = 'mensaje-estado error';
+    mensajeEstado.textContent = errores.join(' ');
+    return;
+  }
+
+  const materialesTexto = [...listaMateriales.querySelectorAll('.fila-material')]
+    .map(fila => {
+      const codigo = fila.querySelector('.material-codigo').value;
+      const cantidad = fila.querySelector('.input-cantidad').value;
+      if (!codigo || !cantidad) return null;
+      return `${codigo}:${cantidad}`;
+    })
+    .filter(Boolean)
+    .join('; ');
+
+  const cuerpoCorreo =
+`Equipo_Activo: ${equipoSeleccionado}
+Actividad: ${actividadSeleccionada.Actividad}
+Fuga: ${fugaValor}
+Responsable: ${responsable}
+Descripcion: ${descripcion}
+Materiales: ${materialesTexto}
+FIN_OTM`;
+
+  btnEnviar.disabled = true;
+  btnEnviar.textContent = 'Enviando...';
+
+  const esPlaceholder = CONFIG.EMAILJS_SERVICE_ID.startsWith('TU_');
+  if (esPlaceholder) {
+    console.warn('EmailJS no configurado todavía. Cuerpo del correo que se habría enviado:\n' + cuerpoCorreo);
+    setTimeout(() => {
+      mensajeEstado.className = 'mensaje-estado ok';
+      mensajeEstado.textContent = 'Modo de prueba (EmailJS no configurado): revisa la consola del navegador para ver el correo que se habría enviado.';
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = 'Enviar OTM';
+    }, 500);
+    return;
+  }
+
+  emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, {
+    to_email: CONFIG.CORREO_DESTINO,
+    subject: 'Nueva OTM',
+    message: cuerpoCorreo
+  }).then(() => {
+    mensajeEstado.className = 'mensaje-estado ok';
+    mensajeEstado.textContent = '✓ OTM enviada correctamente. Va a aparecer en la lista del día en unos minutos.';
+    form.reset();
+    document.getElementById('quitar-equipo').click();
+    listaMateriales.innerHTML = '';
+    btnFugaSi.classList.remove('activo-si');
+    btnFugaNo.classList.remove('activo-no');
+    fugaValor = null;
+  }).catch((err) => {
+    mensajeEstado.className = 'mensaje-estado error';
+    mensajeEstado.textContent = 'No se pudo enviar. Intenta de nuevo o avisa a tu supervisor.';
+    console.error(err);
+  }).finally(() => {
+    btnEnviar.disabled = false;
+    btnEnviar.textContent = 'Enviar OTM';
+  });
+});
+
+agregarFilaMaterial();
+</script>
+</body>
+</html>
