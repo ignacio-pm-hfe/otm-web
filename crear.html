@@ -143,13 +143,23 @@
     padding:4px 8px; border-radius:5px; color:#fff; background:var(--gold);
   }
 
-  .materiales-lista{ display:flex; flex-direction:column; gap:10px; margin-top:8px; }
-  .fila-material{ display:flex; gap:8px; align-items:flex-start; }
-  .fila-material .campo-auto{ flex:1; }
-  .fila-material input[type=number]{ width:70px; flex:0 0 70px; }
+  .materiales-lista{ display:flex; flex-direction:column; gap:14px; margin-top:8px; }
+  .fila-material{
+    border:1.5px solid var(--line-strong);
+    border-radius:8px;
+    padding:10px;
+  }
+  .fila-material-top{ display:flex; gap:8px; align-items:flex-start; }
+  .fila-material-top .campo-auto{ flex:1; min-width:0; }
   .fila-material .stock-info{ font-size:11px; margin-top:4px; font-weight:600; }
   .fila-material .stock-info.hay{ color:var(--ok); }
   .fila-material .stock-info.no{ color:var(--danger); }
+  .fila-material-bottom{
+    display:flex; align-items:center; gap:10px; margin-top:10px;
+    padding-top:10px; border-top:1px dashed var(--line);
+  }
+  .fila-material-bottom label{ margin:0; font-size:12px; }
+  .fila-material-bottom input[type=number]{ width:90px; }
   .btn-quitar-material{
     flex:0 0 auto; width:38px; height:38px; border:1.5px solid var(--line-strong); background:var(--surface);
     border-radius:8px; color:var(--danger); font-size:16px; cursor:pointer; line-height:1;
@@ -475,16 +485,19 @@ function agregarFilaMaterial() {
   const fila = document.createElement('div');
   fila.className = 'fila-material';
   fila.innerHTML = `
-    <div style="flex:1;">
+    <div class="fila-material-top">
       <div class="campo-auto">
         <input type="text" class="input-material" placeholder="Buscar material por código o nombre..." autocomplete="off">
         <div class="sugerencias sugerencias-material"></div>
         <input type="hidden" class="material-codigo">
       </div>
-      <div class="stock-info"></div>
+      <button type="button" class="btn-quitar-material" title="Quitar">×</button>
     </div>
-    <input type="number" class="input-cantidad" min="1" step="1" placeholder="Cant.">
-    <button type="button" class="btn-quitar-material" title="Quitar">×</button>
+    <div class="stock-info"></div>
+    <div class="fila-material-bottom">
+      <label>Cantidad</label>
+      <input type="number" class="input-cantidad" min="1" step="1" placeholder="0">
+    </div>
   `;
   listaMateriales.appendChild(fila);
 
