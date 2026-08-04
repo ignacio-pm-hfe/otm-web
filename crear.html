@@ -112,11 +112,11 @@
   .sugerencias.abierto{ display:block; }
   .sugerencias .item{
     padding:9px 12px; font-size:13px; cursor:pointer; border-bottom:1px solid var(--line);
-    display:flex; justify-content:space-between; align-items:center; gap:8px;
+    display:flex; flex-direction:column; align-items:flex-start; gap:4px;
   }
   .sugerencias .item:last-child{ border-bottom:none; }
   .sugerencias .item:hover, .sugerencias .item.activo{ background:var(--bg); }
-  .sugerencias .item .texto{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sugerencias .item .texto{ white-space:normal; overflow:visible; text-overflow:clip; line-height:1.35; }
   .sugerencias .stock-tag{ flex:0 0 auto; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:20px; white-space:nowrap; }
   .stock-tag.hay{ background:#DDEAE1; color:var(--ok); }
   .stock-tag.no{ background:#F6E3DF; color:var(--danger); }
@@ -474,7 +474,7 @@ function buscarMateriales(q) {
 function renderItemMaterial(item) {
   const m = item.valor;
   const hay = m.Stock > 0;
-  return `<span class="texto">${m.Codigo} — ${m.Descripcion} (${m.Unidad})</span>
+  return `<span class="texto">${m.Descripcion} (${m.Unidad})</span>
           <span class="stock-tag ${hay ? 'hay' : 'no'}">${hay ? 'Stock: ' + m.Stock : 'Sin stock'}</span>`;
 }
 
@@ -507,7 +507,7 @@ function agregarFilaMaterial() {
   const stockInfo = fila.querySelector('.stock-info');
 
   crearAutocompletado(inputMat, sugMat, buscarMateriales, (item) => {
-    inputMat.value = `${item.valor.Codigo} — ${item.valor.Descripcion}`;
+    inputMat.value = item.valor.Descripcion;
     hiddenCodigo.value = item.valor.Codigo;
     const hay = item.valor.Stock > 0;
     stockInfo.textContent = hay ? `✓ Stock disponible: ${item.valor.Stock} ${item.valor.Unidad}` : '⚠ Sin stock registrado';
