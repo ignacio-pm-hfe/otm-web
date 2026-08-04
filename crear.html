@@ -103,6 +103,14 @@
 
   .campo-oculto{ display:none !important; }
 
+  .link-texto-libre{
+    background:none; border:none; padding:6px 0; margin-top:6px;
+    font-family:'Inter',sans-serif; font-size:12.5px; color:var(--primary-light);
+    text-decoration:underline; cursor:pointer;
+  }
+  .link-texto-libre:hover{ color:var(--primary); }
+  #modo-libre-actividad input[type=text]{ margin-bottom:10px; }
+
   .campo-auto{ position:relative; }
   .sugerencias{
     position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--surface);
@@ -217,17 +225,34 @@
           <div class="chip-seleccion" id="chip-equipo">✓ <span id="chip-equipo-texto"></span> <span class="quitar" id="quitar-equipo">Cambiar</span></div>
 
           <label>Actividad *</label>
-          <div class="campo-auto" id="auto-actividad">
-            <input type="text" id="input-actividad" placeholder="Primero elige un equipo..." autocomplete="off" disabled>
-            <div class="sugerencias" id="sugerencias-actividad"></div>
+          <div id="modo-catalogo-actividad">
+            <div class="campo-auto" id="auto-actividad">
+              <input type="text" id="input-actividad" placeholder="Primero elige un equipo..." autocomplete="off" disabled>
+              <div class="sugerencias" id="sugerencias-actividad"></div>
+            </div>
+            <div class="chip-seleccion" id="chip-actividad">✓ <span id="chip-actividad-texto"></span> <span class="quitar" id="quitar-actividad">Cambiar</span></div>
+            <button type="button" class="link-texto-libre" id="btn-actividad-libre">¿No encuentras la actividad? Usa texto libre</button>
           </div>
-          <div class="chip-seleccion" id="chip-actividad">✓ <span id="chip-actividad-texto"></span> <span class="quitar" id="quitar-actividad">Cambiar</span></div>
+
+          <div id="modo-libre-actividad" class="campo-oculto">
+            <input type="text" id="input-actividad-libre" placeholder="Escribe la actividad realizada...">
+            <label>Tipo de mantenimiento *</label>
+            <div class="fila-toggle" id="fila-tipo-libre">
+              <button type="button" class="btn-toggle" data-tipo="OM01">Correctivo</button>
+              <button type="button" class="btn-toggle" data-tipo="OM03">Preventivo</button>
+              <button type="button" class="btn-toggle" data-tipo="OM04">Mejora</button>
+            </div>
+            <button type="button" class="link-texto-libre" id="btn-actividad-catalogo">← Volver a buscar en el catálogo</button>
+          </div>
+
           <div class="tipo-preview" id="tipo-preview">Tipo de mantenimiento: <span class="badge" id="tipo-badge"></span></div>
 
-          <label>¿Hay fuga? *</label>
-          <div class="fila-toggle">
-            <button type="button" class="btn-toggle" id="btn-fuga-si" data-valor="Si">Sí</button>
-            <button type="button" class="btn-toggle" id="btn-fuga-no" data-valor="No">No</button>
+          <div id="bloque-fuga" class="campo-oculto">
+            <label>¿Esta OT se origina por una fuga de agua? *</label>
+            <div class="fila-toggle">
+              <button type="button" class="btn-toggle" id="btn-fuga-si" data-valor="Si">Sí</button>
+              <button type="button" class="btn-toggle" id="btn-fuga-no" data-valor="No">No</button>
+            </div>
           </div>
 
           <label>Descripción *</label>
@@ -268,6 +293,25 @@ let equiposUnicos = [];
 let equipoSeleccionado = null;
 let actividadSeleccionada = null;
 let fugaValor = null;
+let tipoLibreValor = null;
+
+function buscarDNIPorEquipo(equipo) {
+  const fila = catActividades.find(a => a.Equipo_Activo === equipo);
+  return fila ? fila.DNI : '';
+}
+
+function actualizarVisibilidadFuga() {
+  const bloque = document.getElementById('bloque-fuga');
+  const esCorrectivo = actividadSeleccionada && actividadSeleccionada.Tipo === 'OM01';
+  if (esCorrectivo) {
+    bloque.classList.remove('campo-oculto');
+  } else {
+    bloque.classList.add('campo-oculto');
+    fugaValor = 'No';
+    btnFugaSi.classList.remove('activo-si');
+    btnFugaNo.classList.remove('activo-no');
+  }
+}
 let supervisorValor = null;
 
 // --- ¿Venimos de "+ Agregar material" en una OTM existente? ---
@@ -409,6 +453,7 @@ document.getElementById('quitar-equipo').addEventListener('click', () => {
   document.getElementById('input-actividad').placeholder = 'Primero elige un equipo...';
   document.getElementById('chip-actividad').classList.remove('visible');
   document.getElementById('tipo-preview').classList.remove('visible');
+  actualizarVisibilidadFuga();
 });
 
 /* ---------- Actividad ---------- */
@@ -429,6 +474,7 @@ crearAutocompletado(inputActividad, sugActividad, (q) => {
   document.getElementById('auto-actividad').style.display = 'none';
   document.getElementById('tipo-badge').textContent = item.valor.Tipo || '—';
   document.getElementById('tipo-preview').classList.add('visible');
+  actualizarVisibilidadFuga();
 });
 
 document.getElementById('quitar-actividad').addEventListener('click', () => {
@@ -438,6 +484,51 @@ document.getElementById('quitar-actividad').addEventListener('click', () => {
   document.getElementById('tipo-preview').classList.remove('visible');
   inputActividad.value = '';
   inputActividad.focus();
+  actualizarVisibilidadFuga();
+});
+
+/* ---------- Actividad en texto libre ---------- */
+document.getElementById('btn-actividad-libre').addEventListener('click', () => {
+  document.getElementById('modo-catalogo-actividad').classList.add('campo-oculto');
+  document.getElementById('modo-libre-actividad').classList.remove('campo-oculto');
+  actividadSeleccionada = null;
+  document.getElementById('tipo-preview').classList.remove('visible');
+  actualizarVisibilidadFuga();
+});
+
+document.getElementById('btn-actividad-catalogo').addEventListener('click', () => {
+  document.getElementById('modo-libre-actividad').classList.add('campo-oculto');
+  document.getElementById('modo-catalogo-actividad').classList.remove('campo-oculto');
+  document.getElementById('input-actividad-libre').value = '';
+  tipoLibreValor = null;
+  [...document.getElementById('fila-tipo-libre').children].forEach(b => b.classList.remove('activo-sup'));
+  actividadSeleccionada = null;
+  document.getElementById('tipo-preview').classList.remove('visible');
+  actualizarVisibilidadFuga();
+});
+
+function actualizarActividadLibre() {
+  const texto = document.getElementById('input-actividad-libre').value.trim();
+  if (texto && tipoLibreValor) {
+    actividadSeleccionada = { Actividad: texto, Tipo: tipoLibreValor, DNI: buscarDNIPorEquipo(equipoSeleccionado) };
+    document.getElementById('tipo-badge').textContent = tipoLibreValor;
+    document.getElementById('tipo-preview').classList.add('visible');
+  } else {
+    actividadSeleccionada = null;
+    document.getElementById('tipo-preview').classList.remove('visible');
+  }
+  actualizarVisibilidadFuga();
+}
+
+document.getElementById('input-actividad-libre').addEventListener('input', actualizarActividadLibre);
+
+[...document.getElementById('fila-tipo-libre').children].forEach(btn => {
+  btn.addEventListener('click', () => {
+    tipoLibreValor = btn.dataset.tipo;
+    [...document.getElementById('fila-tipo-libre').children].forEach(b => b.classList.remove('activo-sup'));
+    btn.classList.add('activo-sup');
+    actualizarActividadLibre();
+  });
 });
 
 /* ---------- Fuga ---------- */
@@ -565,28 +656,29 @@ FIN_OTM`;
 function construirMensajeWhatsApp() {
   const materiales = obtenerMateriales().map(m => {
     const mat = catMateriales.find(x => x.Codigo === m.codigo);
-    const nombre = mat ? mat.Descripcion : m.codigo;
-    return `  • ${m.codigo} — ${nombre} × ${m.cantidad}`;
+    const nombre = mat ? mat.Descripcion : '';
+    return `  🔹 ${m.codigo} — ${nombre} × ${m.cantidad}`;
   }).join('\n');
 
   if (ordenExistente) {
-    return `*Material agregado a OTM*
-Orden: ${ordenExistente}
-Equipo/Activo: ${equipoDesdeUrl || '—'}
-Supervisor: ${supervisorValor}
-Materiales:
+    return `🧰 *Material agregado a OTM*
+📄 Orden: ${ordenExistente}
+⚙️ Equipo/Activo: ${equipoDesdeUrl || '—'}
+👤 Supervisor: ${supervisorValor}
+📦 Materiales:
 ${materiales || '(ninguno)'}`;
   }
 
   const prioridad = fugaValor === 'Si' ? 'Alta' : 'Media';
-  let msg = `*Resumen de OTM*
-Tipo de mantenimiento: ${actividadSeleccionada.Tipo || '—'}
-Prioridad: ${prioridad}
-Actividad: ${actividadSeleccionada.Actividad}
-DNI (equipo SAP): ${actividadSeleccionada.DNI || '—'}
-Equipo/Activo: ${equipoSeleccionado}
-Supervisor: ${supervisorValor}`;
-  msg += materiales ? `\nMateriales:\n${materiales}` : `\nMateriales: (ninguno)`;
+  const emojiPrioridad = prioridad === 'Alta' ? '🔴' : '🟡';
+  let msg = `🛠️ *Resumen de OTM*
+🏷️ Tipo de mantenimiento: ${actividadSeleccionada.Tipo || '—'}
+${emojiPrioridad} Prioridad: ${prioridad}
+🔧 Actividad: ${actividadSeleccionada.Actividad}
+🆔 DNI (equipo SAP): ${actividadSeleccionada.DNI || '—'}
+⚙️ Equipo/Activo: ${equipoSeleccionado}
+👤 Supervisor: ${supervisorValor}`;
+  msg += materiales ? `\n📦 Materiales:\n${materiales}` : `\n📦 Materiales: (ninguno)`;
   return msg;
 }
 
@@ -605,7 +697,14 @@ function enviarAExcel(cuerpoCorreo) {
 
 function limpiarFormulario() {
   document.getElementById('input-descripcion').value = '';
-  if (!ordenExistente) document.getElementById('quitar-equipo').click();
+  if (!ordenExistente) {
+    document.getElementById('quitar-equipo').click();
+    document.getElementById('modo-libre-actividad').classList.add('campo-oculto');
+    document.getElementById('modo-catalogo-actividad').classList.remove('campo-oculto');
+    document.getElementById('input-actividad-libre').value = '';
+    tipoLibreValor = null;
+    [...document.getElementById('fila-tipo-libre').children].forEach(b => b.classList.remove('activo-sup'));
+  }
   listaMateriales.innerHTML = '';
   btnFugaSi.classList.remove('activo-si');
   btnFugaNo.classList.remove('activo-no');
